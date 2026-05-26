@@ -1,0 +1,37 @@
+/**
+ * Utility: Formatters
+ * Date formatting, contract ID, phone, plan duration helpers
+ */
+
+/**
+ * Format ISO date string to Thai locale date
+ * @param {string} isoDate
+ * @param {'short'|'long'} style
+ * @returns {string}
+ */
+export function formatDate(isoDate, style = 'short') {
+  if (!isoDate) return '-';
+  const opts =
+    style === 'long'
+      ? { year: 'numeric', month: 'long', day: 'numeric' }
+      : { year: 'numeric', month: '2-digit', day: '2-digit' };
+  return new Date(isoDate).toLocaleDateString('th-TH', opts);
+}
+
+/**
+ * Format customer ID to contract reference code
+ * @param {string} id
+ * @returns {string}
+ */
+export function formatContractId(id) {
+  return `uF-${String(id).padEnd(6, '0')}`;
+}
+
+/**
+ * Format plan duration to Thai string
+ * @param {number} months
+ * @returns {string}
+ */
+export function formatPlanMonths(months) {
+  return `${months} เดือน`;
+}
