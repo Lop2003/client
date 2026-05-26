@@ -43,12 +43,10 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, isMobileOpen, o
     onCloseMobile?.();
   };
 
-  const width = isCollapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH;
-
   const sidebarContent = (
     <Box
       sx={{
-        width,
+        width: '100%',
         height: '100%',
         background: SIDEBAR_GRADIENT,
         display: 'flex',
@@ -95,7 +93,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, isMobileOpen, o
                 <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: '#fff', lineHeight: 1, whiteSpace: 'nowrap' }}>
                   <Box component="span" sx={{ color: '#FFDA1A' }}>U</Box>friend CX
                 </Typography>
-                <Typography sx={{ fontSize: '0.5625rem', color: 'rgba(186,230,253,0.8)', fontWeight: 600,
+                <Typography sx={{ fontSize: '0.6875rem', color: 'rgba(186,230,253,0.8)', fontWeight: 600,
                                   textTransform: 'uppercase', letterSpacing: '0.1em', mt: 0.25 }}>
                   แผงควบคุมหลัก
                 </Typography>
@@ -211,10 +209,10 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, isMobileOpen, o
           {!isCollapsed && (
             <Box sx={{ overflow: 'hidden' }}>
               <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap' }}>
-                ผู้ตรวจสอบคนที่ 2
+                เจ้าหน้าที่บริการลูกค้า uFriend
               </Typography>
-              <Typography sx={{ fontSize: '0.5625rem', color: 'rgba(147,197,253,0.6)', whiteSpace: 'nowrap' }}>
-                บทบาท: ตรวจสอบความถูกต้อง
+              <Typography sx={{ fontSize: '0.6875rem', color: 'rgba(147,197,253,0.6)', whiteSpace: 'nowrap' }}>
+                บทบาท: ดูแลลูกค้าสัมพันธ์ (CX)
               </Typography>
             </Box>
           )}

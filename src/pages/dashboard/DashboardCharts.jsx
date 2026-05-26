@@ -3,6 +3,9 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
+import StoreIcon from '@mui/icons-material/Store';
+import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip as RechartTooltip, ResponsiveContainer,
   Cell, PieChart, Pie, LineChart, Line, CartesianGrid,
@@ -14,7 +17,7 @@ const CustomTooltip = ({ active, payload, unit = 'ราย' }) => {
   return (
     <Box sx={{ bgcolor: '#1e293b', border: '1px solid #334155', color: '#fff',
                 p: 1.25, borderRadius: 2, boxShadow: 4 }}>
-      <Typography sx={{ fontSize: '0.5625rem', color: '#94a3b8', fontWeight: 800,
+      <Typography sx={{ fontSize: '0.6875rem', color: '#94a3b8', fontWeight: 800,
                         textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.25 }}>
         {payload[0].payload.name}
       </Typography>
@@ -106,11 +109,11 @@ export default function DashboardCharts() {
         {icon}
       </Box>
       <Box>
-        <Typography sx={{ fontSize: '0.6875rem', fontWeight: 900, color: '#111827',
+        <Typography sx={{ fontSize: '0.75rem', fontWeight: 800, color: '#111827',
                           textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           {title}
         </Typography>
-        <Typography sx={{ fontSize: '0.625rem', color: '#9ca3af' }}>{subtitle}</Typography>
+        <Typography sx={{ fontSize: '0.6875rem', color: '#64748b' }}>{subtitle}</Typography>
       </Box>
     </Box>
   );
@@ -123,7 +126,7 @@ export default function DashboardCharts() {
         <CardContent sx={{ p: '24px !important' }}>
           <CardHeader
             iconBg="#eff6ff" iconColor="#0051BA"
-            icon={<Box component="span" sx={{ fontSize: 18 }}>🏢</Box>}
+            icon={<StoreIcon sx={{ fontSize: 18 }} />}
             title="ลูกค้าจำแนกรายสาขา"
             subtitle="ประมวลจำนวนสัญญาแยกแต่ละพื้นที่สาขา"
           />
@@ -159,7 +162,7 @@ export default function DashboardCharts() {
         <CardContent sx={{ p: '24px !important' }}>
           <CardHeader
             iconBg="#ecfdf5" iconColor="#057A55"
-            icon={<Box component="span" sx={{ fontSize: 18 }}>😊</Box>}
+            icon={<EmojiEmotionsIcon sx={{ fontSize: 18 }} />}
             title="สัดส่วน Sentiment"
             subtitle="วิเคราะห์อารมณ์รวมของคำประเมินติชม"
           />
@@ -179,7 +182,7 @@ export default function DashboardCharts() {
               </ResponsiveContainer>
               <Box sx={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
                           alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
-                <Typography sx={{ fontSize: '0.5625rem', color: '#9ca3af', fontWeight: 800,
+                <Typography sx={{ fontSize: '0.6875rem', color: '#9ca3af', fontWeight: 800,
                                   textTransform: 'uppercase', letterSpacing: '0.05em' }}>เชิงบวก</Typography>
                 <Typography sx={{ fontSize: '1rem', fontWeight: 900, color: '#057A55' }}>
                   {sentimentData.percentage}%
@@ -210,7 +213,7 @@ export default function DashboardCharts() {
         <CardContent sx={{ p: '24px !important' }}>
           <CardHeader
             iconBg="#fffbeb" iconColor="#92400E"
-            icon={<Box component="span" sx={{ fontSize: 18 }}>📈</Box>}
+            icon={<TrendingUpIcon sx={{ fontSize: 18 }} />}
             title="แนวโน้มคะแนน CSAT"
             subtitle="ประวัติค่าเฉลี่ยคะแนนความพอใจรายสัปดาห์"
           />
@@ -228,7 +231,7 @@ export default function DashboardCharts() {
                     return (
                       <Box sx={{ bgcolor: '#1e293b', border: '1px solid #334155', color: '#fff',
                                   p: 1, borderRadius: 2, boxShadow: 4 }}>
-                        <Typography sx={{ fontSize: '0.5625rem', color: '#94a3b8', mb: 0.25 }}>
+                        <Typography sx={{ fontSize: '0.6875rem', color: '#94a3b8', mb: 0.25 }}>
                           {payload[0].payload.name}
                         </Typography>
                         <Typography sx={{ fontSize: '0.75rem', fontWeight: 900, color: '#fbbf24' }}>

@@ -20,6 +20,7 @@ import TagIcon from '@mui/icons-material/Tag';
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import CheckIcon from '@mui/icons-material/Check';
 import { useNavigate } from 'react-router-dom';
 import { useCX } from '../../hooks/useCX';
 import { fetchCustomerDetail, updateFollowUpStatus } from '../../services/api';
@@ -47,7 +48,7 @@ function CustomerInfoCard({ customer }) {
       <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between',
                   alignItems: 'flex-start', gap: 2, pb: 2.5, borderBottom: '1px solid #f3f4f6', mb: 2.5 }}>
         <Box>
-          <Typography sx={{ fontSize: '0.5625rem', fontWeight: 800, color: '#9ca3af',
+          <Typography sx={{ fontSize: '0.6875rem', fontWeight: 800, color: '#9ca3af',
                             textTransform: 'uppercase', letterSpacing: '0.08em', mb: 0.5 }}>
             ชื่อลูกค้าตามสัญญา
           </Typography>
@@ -79,11 +80,11 @@ function CustomerInfoCard({ customer }) {
               {item.icon}
             </Box>
             <Box>
-              <Typography sx={{ fontSize: '0.5625rem', fontWeight: 800, color: '#9ca3af',
+              <Typography sx={{ fontSize: '0.6875rem', fontWeight: 800, color: '#9ca3af',
                                 textTransform: 'uppercase', letterSpacing: '0.08em', mb: 0.25 }}>
                 {item.label}
               </Typography>
-              <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#111827' }}>
+              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 700, color: '#111827' }}>
                 {item.value}
               </Typography>
             </Box>
@@ -133,10 +134,10 @@ function FeedbackHistory({ feedbacks }) {
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 0.75 }}>
                   <Chip label={`หมวด: ${getFeedbackCategory(fb.category)}`} size="small"
-                    sx={{ height: 18, fontSize: '0.5625rem', fontWeight: 700,
+                    sx={{ height: 20, fontSize: '0.6875rem', fontWeight: 700,
                           bgcolor: '#EEF2FF', color: '#0051BA' }} />
                   <Chip label={`อารมณ์: ${sent.label}`} size="small"
-                    sx={{ height: 18, fontSize: '0.5625rem', fontWeight: 700, ...sent.sx }} />
+                    sx={{ height: 20, fontSize: '0.6875rem', fontWeight: 700, ...sent.sx }} />
                 </Box>
               </Box>
             );
@@ -200,7 +201,7 @@ function FollowUpLog({ followUps, customerId, onRefresh }) {
                     {fu.note}
                   </Typography>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography sx={{ fontSize: '0.5625rem', color: '#9ca3af', fontWeight: 700 }}>
+                    <Typography sx={{ fontSize: '0.6875rem', color: '#9ca3af', fontWeight: 700 }}>
                       โดย: ฝ่ายบริการลูกค้า uFriend
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 0.75, alignItems: 'center' }}>
@@ -208,6 +209,7 @@ function FollowUpLog({ followUps, customerId, onRefresh }) {
                         <Button
                           size="small"
                           variant="outlined"
+                          startIcon={<CheckIcon sx={{ fontSize: '10px !important' }} />}
                           onClick={async () => {
                             try {
                               await updateFollowUpStatus(fu.id, 'done');
@@ -217,18 +219,18 @@ function FollowUpLog({ followUps, customerId, onRefresh }) {
                               showToast('error', 'ไม่สามารถอัพเดทสถานะได้');
                             }
                           }}
-                          sx={{ fontSize: '0.5625rem', height: 20, px: 1, borderRadius: 1.5,
+                          sx={{ fontSize: '0.6875rem', height: 22, px: 1, borderRadius: 1.5,
                                 borderColor: 'primary.light', color: 'primary.main',
                                 '&:hover': { bgcolor: 'primary.main', color: '#fff' } }}
                         >
-                          ✔ เสร็จแล้ว
+                          เสร็จแล้ว
                         </Button>
                       )}
                       <Chip
                         label={fu.status === 'done' ? 'สำเร็จแล้ว' : 'รอดำเนินการ'}
                         size="small"
                         sx={{
-                          height: 18, fontSize: '0.5625rem', fontWeight: 700, borderRadius: 1,
+                          height: 20, fontSize: '0.6875rem', fontWeight: 700, borderRadius: 1,
                           ...(fu.status === 'done'
                             ? { bgcolor: '#dcfce7', color: '#057A55' }
                             : { bgcolor: '#fee2e2', color: '#C81E1E' }),
@@ -300,7 +302,7 @@ export default function CustomerDetailModal() {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Chip label="CX Insight" size="small"
             sx={{ bgcolor: '#EEF2FF', color: 'primary.main', fontWeight: 800,
-                  fontSize: '0.5625rem', textTransform: 'uppercase', height: 20, borderRadius: 1 }} />
+                  fontSize: '0.6875rem', textTransform: 'uppercase', height: 22, borderRadius: 1 }} />
           <Typography sx={{ color: '#cbd5e1', mx: 0.5 }}>/</Typography>
           <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'text.secondary' }}>
             ข้อมูลประวัติลูกค้าสัมพันธ์เชิงลึก
@@ -322,15 +324,25 @@ export default function CustomerDetailModal() {
 
         {/* Action buttons */}
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, justifyContent: 'flex-end', mb: 2.5 }}>
-          <Button variant="contained" size="small" onClick={handleAddFeedback}
+          <Button
+            variant="contained"
+            size="small"
+            onClick={handleAddFeedback}
+            startIcon={<ChatBubbleOutlineIcon sx={{ fontSize: '14px !important' }} />}
             sx={{ bgcolor: '#6366f1', '&:hover': { bgcolor: '#4f46e5' }, borderRadius: 2.5,
-                  fontSize: '0.6875rem', px: 2 }}>
-            💬 บันทึกคำติชม
+                  fontSize: '0.6875rem', px: 2 }}
+          >
+            บันทึกคำติชม
           </Button>
-          <Button variant="contained" size="small" onClick={handleAddFollowUp}
+          <Button
+            variant="contained"
+            size="small"
+            onClick={handleAddFollowUp}
+            startIcon={<AssignmentIcon sx={{ fontSize: '14px !important' }} />}
             sx={{ bgcolor: 'primary.main', '&:hover': { bgcolor: 'primary.dark' }, borderRadius: 2.5,
-                  fontSize: '0.6875rem', px: 2 }}>
-            📝 บันทึกการติดตาม
+                  fontSize: '0.6875rem', px: 2 }}
+          >
+            บันทึกการติดตาม
           </Button>
         </Box>
 

@@ -49,7 +49,7 @@ export default function MainLayout({ children }) {
           display: { xs: 'none', md: 'flex' },
           width: sidebarWidth, flexShrink: 0,
           transition: 'width 0.3s ease',
-          p: 1.5,
+          pt: 1.5, pb: 1.5, pl: 1.5, pr: 0.75,
         }}
       >
         <Sidebar
@@ -83,7 +83,7 @@ export default function MainLayout({ children }) {
       <Box
         sx={{
           flex: 1, display: 'flex', flexDirection: 'column',
-          overflow: 'hidden', p: { xs: 0, md: 1.5 }, pl: { md: 0 },
+          overflow: 'hidden', p: { xs: 0, md: 1.5 }, pl: { md: 0.75 },
         }}
       >
         <Box
@@ -126,9 +126,9 @@ export default function MainLayout({ children }) {
                   size="small"
                   sx={{
                     bgcolor: '#EEF2FF', color: 'primary.main',
-                    fontWeight: 800, fontSize: '0.5625rem',
+                    fontWeight: 800, fontSize: '0.6875rem',
                     textTransform: 'uppercase', letterSpacing: '0.08em',
-                    height: 20, borderRadius: 1,
+                    height: 22, borderRadius: 1,
                   }}
                 />
                 {pageInfo.breadcrumb && (
@@ -146,11 +146,11 @@ export default function MainLayout({ children }) {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexShrink: 0 }}>
                 <Box sx={{ textAlign: 'right', display: { xs: 'none', sm: 'block' } }}>
                   <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, lineHeight: 1 }}>
-                    ผู้ตรวจสอบคนที่ 2
+                    เจ้าหน้าที่บริการลูกค้า uFriend
                   </Typography>
-                  <Typography sx={{ fontSize: '0.5625rem', color: 'text.disabled', fontWeight: 600,
+                  <Typography sx={{ fontSize: '0.6875rem', color: 'text.disabled', fontWeight: 600,
                                     textTransform: 'uppercase', letterSpacing: '0.08em', mt: 0.25 }}>
-                    แผงควบคุมนูนต่ำ
+                    ฝ่ายบริหารประสบการณ์ลูกค้า
                   </Typography>
                 </Box>
                 <Tooltip title="โปรไฟล์ผู้ใช้">

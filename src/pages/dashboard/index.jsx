@@ -9,6 +9,10 @@ import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import SearchIcon from '@mui/icons-material/Search';
+import TuneIcon from '@mui/icons-material/Tune';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import PieChartIcon from '@mui/icons-material/PieChart';
+import ListAltIcon from '@mui/icons-material/ListAlt';
 import DashboardCards from './DashboardCards';
 import DashboardCharts from './DashboardCharts';
 import CustomerTable from '../customers/CustomerTable';
@@ -16,8 +20,8 @@ import { useCX } from '../../hooks/useCX';
 import * as api from '../../services/api';
 
 const SECTION_TITLE_SX = {
-  fontSize: '0.5625rem', fontWeight: 900, color: '#9ca3af',
-  textTransform: 'uppercase', letterSpacing: '0.1em',
+  fontSize: '0.75rem', fontWeight: 800, color: '#64748b',
+  textTransform: 'uppercase', letterSpacing: '0.08em',
   display: 'flex', alignItems: 'center', gap: 0.75,
 };
 
@@ -50,41 +54,14 @@ export default function DashboardPage() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
 
-      {/* ── Section 1: KPI Cards ── */}
-      <Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
-          <Typography sx={SECTION_TITLE_SX}>
-            ℹ️ ดัชนีชี้วัดหลัก (KPI &amp; Metrics)
-          </Typography>
-          {selectedBranch && (
-            <Typography sx={{ fontSize: '0.5625rem', fontWeight: 800, color: 'primary.main',
-                              bgcolor: '#EEF2FF', border: '1px solid', borderColor: 'primary.light',
-                              px: 1.25, py: 0.25, borderRadius: 99 }}>
-              ฟิลเตอร์สาขา: {selectedBranch}
-            </Typography>
-          )}
-        </Box>
-        <DashboardCards />
-      </Box>
-
-      {/* ── Section 2: Charts ── */}
+      {/* ── Section 0: Filters ── */}
       <Box>
         <Typography sx={{ ...SECTION_TITLE_SX, mb: 1.5 }}>
-          🥧 การวิเคราะห์และแนวโน้มความพึงพอใจ (Charts &amp; Graphs)
+          <TuneIcon sx={{ fontSize: 13, color: '#9ca3af' }} /> ตัวกรองและค้นหาข้อมูลแดชบอร์ด (Search &amp; Filters)
         </Typography>
-        <DashboardCharts />
-      </Box>
-
-      {/* ── Section 3: Customer Table ── */}
-      <Box>
-        <Typography sx={{ ...SECTION_TITLE_SX, mb: 1.5 }}>
-          📋 บัญชีรายชื่อลูกค้าสัญญา{selectedBranch ? ` เฉพาะสาขา ${selectedBranch}` : ' ทั้งหมดในระบบ'}
-        </Typography>
-
-        {/* Filter bar */}
         <Paper
           variant="outlined"
-          sx={{ p: 2, mb: 2, borderRadius: 3, display: 'flex', flexWrap: 'wrap', gap: 1.5,
+          sx={{ p: 2, borderRadius: 3, display: 'flex', flexWrap: 'wrap', gap: 1.5,
                 alignItems: 'center', borderColor: 'divider' }}
         >
           <TextField
@@ -134,6 +111,38 @@ export default function DashboardPage() {
             </Button>
           )}
         </Paper>
+      </Box>
+
+      {/* ── Section 1: KPI Cards ── */}
+      <Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
+          <Typography sx={SECTION_TITLE_SX}>
+            <AssessmentIcon sx={{ fontSize: 13, color: '#9ca3af' }} /> ดัชนีชี้วัดหลัก (KPI &amp; Metrics)
+          </Typography>
+          {selectedBranch && (
+            <Typography sx={{ fontSize: '0.6875rem', fontWeight: 800, color: 'primary.main',
+                              bgcolor: '#EEF2FF', border: '1px solid', borderColor: 'primary.light',
+                              px: 1.5, py: 0.35, borderRadius: 99 }}>
+              ฟิลเตอร์สาขา: {selectedBranch}
+            </Typography>
+          )}
+        </Box>
+        <DashboardCards />
+      </Box>
+
+      {/* ── Section 2: Charts ── */}
+      <Box>
+        <Typography sx={{ ...SECTION_TITLE_SX, mb: 1.5 }}>
+          <PieChartIcon sx={{ fontSize: 13, color: '#9ca3af' }} /> การวิเคราะห์และแนวโน้มความพึงพอใจ (Charts &amp; Graphs)
+        </Typography>
+        <DashboardCharts />
+      </Box>
+
+      {/* ── Section 3: Customer Table ── */}
+      <Box>
+        <Typography sx={{ ...SECTION_TITLE_SX, mb: 1.5 }}>
+          <ListAltIcon sx={{ fontSize: 13, color: '#9ca3af' }} /> บัญชีรายชื่อลูกค้าสัญญา{selectedBranch ? ` เฉพาะสาขา ${selectedBranch}` : ' ทั้งหมดในระบบ'}
+        </Typography>
 
         <CustomerTable />
       </Box>

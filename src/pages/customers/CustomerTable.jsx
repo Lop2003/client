@@ -79,7 +79,7 @@ export default function CustomerTable() {
                       direction={sortBy === cell.id ? sortOrder : 'asc'}
                       onClick={() => handleSort(cell.id)}
                       sx={{
-                        fontSize: '0.5625rem', fontWeight: 900, color: '#9ca3af',
+                        fontSize: '0.6875rem', fontWeight: 800, color: '#9ca3af',
                         textTransform: 'uppercase', letterSpacing: '0.08em',
                         whiteSpace: 'nowrap',
                         '&.Mui-active': { color: 'primary.main' },
@@ -89,7 +89,7 @@ export default function CustomerTable() {
                       {cell.label}
                     </TableSortLabel>
                   ) : (
-                    <Typography sx={{ fontSize: '0.5625rem', fontWeight: 900, color: '#9ca3af',
+                    <Typography sx={{ fontSize: '0.6875rem', fontWeight: 800, color: '#9ca3af',
                                       textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>
                       {cell.label}
                     </Typography>
@@ -129,30 +129,30 @@ export default function CustomerTable() {
                     }}
                   >
                     <TableCell>
-                      <Typography sx={{ fontSize: '0.6875rem', color: '#9ca3af', fontFamily: 'monospace' }}>
+                      <Typography sx={{ fontSize: '0.75rem', color: '#9ca3af', fontFamily: 'monospace' }}>
                         {formatContractId(c.id)}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#111827', whiteSpace: 'nowrap' }}>
+                      <Typography sx={{ fontSize: '0.8125rem', fontWeight: 700, color: '#111827', whiteSpace: 'nowrap' }}>
                         {c.name}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography sx={{ fontSize: '0.6875rem', color: '#6b7280', fontFamily: 'monospace' }}>
+                      <Typography sx={{ fontSize: '0.75rem', color: '#6b7280', fontFamily: 'monospace' }}>
                         {c.phone}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography sx={{ fontSize: '0.6875rem', fontWeight: 700, color: '#374151' }}>
+                      <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#374151' }}>
                         {c.product}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography sx={{ fontSize: '0.6875rem', color: '#6b7280' }}>{c.branch}</Typography>
+                      <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>{c.branch}</Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography sx={{ fontSize: '0.6875rem', color: '#9ca3af' }}>
+                      <Typography sx={{ fontSize: '0.75rem', color: '#9ca3af' }}>
                         {c.plan_months} เดือน
                       </Typography>
                     </TableCell>
@@ -161,13 +161,13 @@ export default function CustomerTable() {
                         label={s.label}
                         size="small"
                         variant="outlined"
-                        sx={{ ...s.chipSx, fontSize: '0.5625rem', fontWeight: 700, height: 20, borderRadius: 1 }}
+                        sx={{ ...s.chipSx, fontSize: '0.625rem', fontWeight: 700, height: 20, borderRadius: 1 }}
                       />
                     </TableCell>
                     <TableCell align="right">
                       <Button
                         size="small" variant="text" endIcon={<ChevronRightIcon sx={{ fontSize: '14px !important' }} />}
-                        sx={{ fontSize: '0.6875rem', fontWeight: 700, color: 'primary.main',
+                        sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'primary.main',
                               '&:hover': { bgcolor: '#EEF2FF' } }}
                       >
                         ดูประวัติ

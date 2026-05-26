@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -23,18 +24,15 @@ const StatCard = ({ label, value, color, isActive, onClick }) => (
       '&:active': { transform: 'scale(0.98)' },
     }}
   >
-    <Typography sx={{ fontSize: '0.5625rem', fontWeight: 800, color: '#9ca3af',
+    <Typography sx={{ fontSize: '0.6875rem', fontWeight: 800, color: '#9ca3af',
                       textTransform: 'uppercase', letterSpacing: '0.08em' }}>
       {label}
     </Typography>
-    <Typography sx={{ fontSize: '1.25rem', fontWeight: 900, color, mt: 0.5 }}>
+    <Typography sx={{ fontSize: '1.375rem', fontWeight: 900, color, mt: 0.5 }}>
       {value} ราย
     </Typography>
   </Box>
 );
-
-const BRANCHES = ['วงเวียนใหญ่', 'รังสิต', 'ลาดพร้าว', 'สยาม', 'ลาดพร้าว', 'เชียงใหม่ นิมาน', 'ขอนแก่น มข.', 'หาดใหญ่ เซ็นทรัล', 'ชลบุรี อมตะ'];
-const UNIQUE_BRANCHES = [...new Set(BRANCHES)];
 
 export default function CustomersPage() {
   const {
@@ -42,6 +40,7 @@ export default function CustomersPage() {
     searchQuery, setSearchQuery,
     selectedBranch, setSelectedBranch,
     selectedStatus, setSelectedStatus,
+    branchStats,
   } = useCX();
 
   const total     = customers.length;
@@ -49,11 +48,31 @@ export default function CustomersPage() {
   const overdue   = customers.filter(c => c.status === 'overdue').length;
   const completed = customers.filter(c => c.status === 'completed').length;
 
+  // Compute unique list of branches dynamically from stats and data, with standard static fallbacks
+  const uniqueBranches = useMemo(() => {
+    const list = new Set();
+    if (branchStats && branchStats.length > 0) {
+      branchStats.forEach(s => {
+        if (s.branch) list.add(s.branch);
+      });
+    }
+    if (customers && customers.length > 0) {
+      customers.forEach(c => {
+        if (c.branch) list.add(c.branch);
+      });
+    }
+    const fallback = ['วงเวียนใหญ่', 'รังสิต', 'ลาดพร้าว', 'สยาม', 'เชียงใหม่ นิมาน', 'ขอนแก่น มข.', 'หาดใหญ่ เซ็นทรัล', 'ชลบุรี อมตะ'];
+    if (list.size === 0) {
+      return fallback;
+    }
+    return [...list].sort();
+  }, [branchStats, customers]);
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
 
-      {/* Quick Stats */}
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
+      {/* Quick Stats - Responsive 4 columns on Desktop, 2 columns on Mobile */}
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, gap: 2 }}>
         <StatCard label="ลูกค้าทั้งหมด"   value={total}     color="#0051BA" isActive={selectedStatus === ''}         onClick={() => setSelectedStatus('')} />
         <StatCard label="ผ่อนชำระปกติ"   value={active}    color="#057A55" isActive={selectedStatus === 'active'}    onClick={() => setSelectedStatus(selectedStatus === 'active' ? '' : 'active')} />
         <StatCard label="ค้างชำระค่างวด" value={overdue}   color="#C81E1E" isActive={selectedStatus === 'overdue'}   onClick={() => setSelectedStatus(selectedStatus === 'overdue' ? '' : 'overdue')} />
@@ -85,7 +104,7 @@ export default function CustomersPage() {
             sx={{ borderRadius: 3, fontSize: '0.75rem' }}
           >
             <MenuItem value=""><em>สาขา: ทั้งหมด</em></MenuItem>
-            {UNIQUE_BRANCHES.map(br => <MenuItem key={br} value={br}>{br}</MenuItem>)}
+            {uniqueBranches.map(br => <MenuItem key={br} value={br}>{br}</MenuItem>)}
           </Select>
         </FormControl>
 

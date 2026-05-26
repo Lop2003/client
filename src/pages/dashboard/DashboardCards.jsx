@@ -48,7 +48,7 @@ export default function DashboardCards() {
       title: 'ค้างชำระ',
       value: summaryStats.overdueCount,
       unit: 'ราย',
-      sub: '🚨 เร่งโทรเจรจาติดตามหนี้ด่วน',
+      sub: 'เร่งโทรเจรจาติดตามหนี้ด่วน',
       icon: <WarningAmberIcon sx={{ fontSize: 22 }} />,
       bg: 'linear-gradient(135deg, #fff0f2 0%, #ffe3e7 100%)',
       iconBg: '#fee2e2',
@@ -78,7 +78,7 @@ export default function DashboardCards() {
   ];
 
   return (
-    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', xl: 'repeat(4, 1fr)' }, gap: 2.5 }}>
+    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', md: 'repeat(4, 1fr)' }, gap: 2.5 }}>
       {cards.map(card => {
         const isActive = !card.noClick && selectedStatus === card.key;
         return (
@@ -107,9 +107,9 @@ export default function DashboardCards() {
               '&:active': card.noClick ? {} : { transform: 'scale(0.98)' },
             }}
           >
-            <CardContent sx={{ p: '16px !important' }}>
+             <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <Typography sx={{ fontSize: '0.625rem', fontWeight: 800, color: card.titleColor,
+                <Typography sx={{ fontSize: '0.75rem', fontWeight: 800, color: card.titleColor,
                                   textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   {card.title}
                 </Typography>
@@ -121,15 +121,17 @@ export default function DashboardCards() {
                 </Box>
               </Box>
               <Box sx={{ mt: 1 }}>
-                <Typography sx={{ fontSize: '1.75rem', fontWeight: 800, color: card.valueColor, lineHeight: 1.1 }}>
+                <Typography sx={{ fontSize: '1.875rem', fontWeight: 800, color: card.valueColor, lineHeight: 1.1 }}>
                   {card.value}{' '}
-                  <Box component="span" sx={{ fontSize: '0.6875rem', fontWeight: 600, opacity: 0.7 }}>
+                  <Box component="span" sx={{ fontSize: '0.75rem', fontWeight: 600, opacity: 0.7 }}>
                     {card.unit}
                   </Box>
                 </Typography>
-                <Typography sx={{ fontSize: '0.5625rem', fontWeight: 700, color: card.subColor, mt: 1,
+                <Typography sx={{ fontSize: '0.6875rem', fontWeight: 700, color: card.subColor, mt: 1,
                                   display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  {!card.sub.startsWith('🚨') && (
+                  {card.key === 'overdue' ? (
+                    <WarningAmberIcon sx={{ fontSize: 11, color: card.iconColor, flexShrink: 0 }} />
+                  ) : (
                     <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: card.iconColor, flexShrink: 0 }} />
                   )}
                   {card.sub}
