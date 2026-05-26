@@ -1,20 +1,10 @@
+import { useMemo } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Button from '@mui/material/Button';
-import Paper from '@mui/material/Paper';
-import SearchIcon from '@mui/icons-material/Search';
-import TuneIcon from '@mui/icons-material/Tune';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import PieChartIcon from '@mui/icons-material/PieChart';
 import ListAltIcon from '@mui/icons-material/ListAlt';
-import DashboardCards from './DashboardCards';
-import DashboardCharts from './DashboardCharts';
-import CustomerTable from '../customers/CustomerTable';
+import TuneIcon from '@mui/icons-material/Tune';
 import { useNavigate } from 'react-router-dom';
 import { useCustomers } from '../../hooks/useCustomers';
 import { useDashboardStats } from '../../hooks/useDashboardStats';
@@ -22,12 +12,11 @@ import { useCustomerFilters } from '../../hooks/useCustomerFilters';
 import { useBranches } from '../../hooks/useBranches';
 import { useFeedbacks } from '../../hooks/useFeedbacks';
 import { PATHS } from '../../routes/paths';
-
-const SECTION_TITLE_SX = {
-  fontSize: '0.75rem', fontWeight: 800, color: '#64748b',
-  textTransform: 'uppercase', letterSpacing: '0.08em',
-  display: 'flex', alignItems: 'center', gap: 0.75,
-};
+import DashboardSection from './DashboardSection';
+import DashboardFilters from './DashboardFilters';
+import DashboardCards from './DashboardCards';
+import DashboardCharts from './DashboardCharts';
+import CustomerTable from '../customers/CustomerTable';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -42,127 +31,87 @@ export default function DashboardPage() {
     hasFilters,
   } = useCustomerFilters();
 
-  const { summaryStats, branchStats, customerBranchMap } = useDashboardStats({
-    branch: selectedBranch,
-  });
-
-  const { customers } = useCustomers({
-    search: searchQuery,
-    branch: selectedBranch,
-    status: selectedStatus,
-    sortBy,
-    sortOrder,
-  });
-
+  const { summaryStats, branchStats, customerBranchMap } = useDashboardStats({ branch: selectedBranch });
+  const { customers } = useCustomers({ search: searchQuery, branch: selectedBranch, status: selectedStatus, sortBy, sortOrder });
   const { branches } = useBranches();
+  const { filteredFeedbacks } = useFeedbacks({ branch: selectedBranch, customerBranchMap });
 
-  const { filteredFeedbacks } = useFeedbacks({
-    branch: selectedBranch,
-    customerBranchMap,
-  });
+  // คำนวณ satisfactionRate จาก filteredFeedbacks จริงๆ (useDashboardStats ไม่รู้จัก feedbacks)
+  const satisfactionRate = useMemo(() => {
+    if (!filteredFeedbacks.length) return '0';
+    const pos = filteredFeedbacks.filter(fb => fb.sentiment === 'positive').length;
+    return ((pos / filteredFeedbacks.length) * 100).toFixed(0);
+  }, [filteredFeedbacks]);
+
+  const statsForCards = useMemo(() => ({
+    ...summaryStats,
+    satisfactionRate,
+  }), [summaryStats, satisfactionRate]);
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
 
-      {/* ── Section 0: Filters ── */}
-      <Box>
-        <Typography sx={{ ...SECTION_TITLE_SX, mb: 1.5 }}>
-          <TuneIcon sx={{ fontSize: 13, color: '#9ca3af' }} /> ตัวกรองและค้นหาข้อมูลแดชบอร์ด (Search &amp; Filters)
-        </Typography>
-        <Paper
-          variant="outlined"
-          sx={{ p: 2, borderRadius: 3, display: 'flex', flexWrap: 'wrap', gap: 1.5,
-                alignItems: 'center', borderColor: 'divider' }}
-        >
-          <TextField
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            placeholder="ค้นหาชื่อลูกค้า, เบอร์โทร, สินค้าผ่อน..."
-            sx={{ flex: 1, minWidth: 200 }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
-                </InputAdornment>
-              ),
-            }}
-          />
+      {/* Filters */}
+      <DashboardSection
+        icon={<TuneIcon sx={{ fontSize: 13, color: '#9ca3af' }} />}
+        label="ตัวกรองและค้นหาข้อมูลแดชบอร์ด (Search & Filters)"
+      >
+        <DashboardFilters
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          selectedBranch={selectedBranch}
+          setSelectedBranch={setSelectedBranch}
+          selectedStatus={selectedStatus}
+          setSelectedStatus={setSelectedStatus}
+          branches={branches}
+          hasFilters={hasFilters}
+          resetFilters={resetFilters}
+        />
+      </DashboardSection>
 
-          <FormControl size="small" sx={{ minWidth: 160 }}>
-            <Select
-              value={selectedBranch}
-              onChange={e => setSelectedBranch(e.target.value)}
-              displayEmpty
-              sx={{ borderRadius: 3, fontSize: '0.75rem' }}
+      {/* KPI Cards */}
+      <DashboardSection
+        icon={<AssessmentIcon sx={{ fontSize: 13, color: '#9ca3af' }} />}
+        label="ดัชนีชี้วัดหลัก (KPI & Metrics)"
+        rightSlot={
+          selectedBranch && (
+            <Typography
+              sx={{
+                fontSize: '0.6875rem', fontWeight: 800, color: 'primary.main',
+                bgcolor: '#EEF2FF', border: '1px solid', borderColor: 'primary.light',
+                px: 1.5, py: 0.35, borderRadius: 99,
+              }}
             >
-              <MenuItem value=""><em>สาขา: ทั้งหมด</em></MenuItem>
-              {branches.map(br => <MenuItem key={br} value={br}>{br}</MenuItem>)}
-            </Select>
-          </FormControl>
-
-          <FormControl size="small" sx={{ minWidth: 180 }}>
-            <Select
-              value={selectedStatus}
-              onChange={e => setSelectedStatus(e.target.value)}
-              displayEmpty
-              sx={{ borderRadius: 3, fontSize: '0.75rem' }}
-            >
-              <MenuItem value=""><em>สถานะ: ทั้งหมด</em></MenuItem>
-              <MenuItem value="active">ปกติ (Active)</MenuItem>
-              <MenuItem value="overdue">ค้างชำระ (Overdue)</MenuItem>
-              <MenuItem value="completed">จบสัญญา (Completed)</MenuItem>
-            </Select>
-          </FormControl>
-
-          {hasFilters && (
-            <Button size="small" variant="outlined" onClick={resetFilters}
-              sx={{ borderRadius: 3, fontSize: '0.6875rem', px: 2 }}>
-              รีเซ็ต
-            </Button>
-          )}
-        </Paper>
-      </Box>
-
-      {/* ── Section 1: KPI Cards ── */}
-      <Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
-          <Typography sx={SECTION_TITLE_SX}>
-            <AssessmentIcon sx={{ fontSize: 13, color: '#9ca3af' }} /> ดัชนีชี้วัดหลัก (KPI &amp; Metrics)
-          </Typography>
-          {selectedBranch && (
-            <Typography sx={{ fontSize: '0.6875rem', fontWeight: 800, color: 'primary.main',
-                              bgcolor: '#EEF2FF', border: '1px solid', borderColor: 'primary.light',
-                              px: 1.5, py: 0.35, borderRadius: 99 }}>
               ฟิลเตอร์สาขา: {selectedBranch}
             </Typography>
-          )}
-        </Box>
+          )
+        }
+      >
         <DashboardCards
-          summaryStats={summaryStats}
+          summaryStats={statsForCards}
           selectedStatus={selectedStatus}
           setSelectedStatus={setSelectedStatus}
         />
-      </Box>
+      </DashboardSection>
 
-      {/* ── Section 2: Charts ── */}
-      <Box>
-        <Typography sx={{ ...SECTION_TITLE_SX, mb: 1.5 }}>
-          <PieChartIcon sx={{ fontSize: 13, color: '#9ca3af' }} /> การวิเคราะห์และแนวโน้มความพึงพอใจ (Charts &amp; Graphs)
-        </Typography>
+      {/* Charts */}
+      <DashboardSection
+        icon={<PieChartIcon sx={{ fontSize: 13, color: '#9ca3af' }} />}
+        label="การวิเคราะห์และแนวโน้มความพึงพอใจ (Charts & Graphs)"
+      >
         <DashboardCharts
           branchStats={branchStats}
           filteredFeedbacks={filteredFeedbacks}
           selectedBranch={selectedBranch}
           setSelectedBranch={setSelectedBranch}
         />
-      </Box>
+      </DashboardSection>
 
-      {/* ── Section 3: Customer Table ── */}
-      <Box>
-        <Typography sx={{ ...SECTION_TITLE_SX, mb: 1.5 }}>
-          <ListAltIcon sx={{ fontSize: 13, color: '#9ca3af' }} /> บัญชีรายชื่อลูกค้าสัญญา{selectedBranch ? ` เฉพาะสาขา ${selectedBranch}` : ' ทั้งหมดในระบบ'}
-        </Typography>
-
+      {/* Customer Table */}
+      <DashboardSection
+        icon={<ListAltIcon sx={{ fontSize: 13, color: '#9ca3af' }} />}
+        label={`บัญชีรายชื่อลูกค้าสัญญา${selectedBranch ? ` เฉพาะสาขา ${selectedBranch}` : ' ทั้งหมดในระบบ'}`}
+      >
         <CustomerTable
           customers={customers}
           sortBy={sortBy}
@@ -171,7 +120,7 @@ export default function DashboardPage() {
           setSortOrder={setSortOrder}
           onRowClick={id => navigate(`${PATHS.CUSTOMERS}?id=${id}`)}
         />
-      </Box>
+      </DashboardSection>
 
     </Box>
   );

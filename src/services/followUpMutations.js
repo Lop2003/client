@@ -1,11 +1,11 @@
-import { request } from './apiClient';
+import { request } from "./apiClient";
 
 /**
  * WRITE — บันทึก follow-up ใหม่
  */
 export async function createFollowUp(payload) {
-  return request('/api/follow-ups', {
-    method: 'POST',
+  return request("/api/follow-ups/", {
+    method: "POST",
     body: JSON.stringify(payload),
   });
 }
@@ -15,7 +15,7 @@ export async function createFollowUp(payload) {
  */
 export async function updateFollowUpStatus(id, status) {
   return request(`/api/follow-ups/${id}`, {
-    method: 'PATCH',
+    method: "PATCH",
     body: JSON.stringify({ status }),
   });
 }

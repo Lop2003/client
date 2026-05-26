@@ -1,12 +1,19 @@
-import { useState, useEffect, useCallback } from 'react';
-import { fetchCustomers } from '../services/customerService';
+import { useState, useEffect, useCallback } from "react";
+import { fetchCustomers } from "../services/customerService";
 
 /**
- * useCustomers — fetch รายชื่อลูกค้าพร้อม filter/sort
- * ใช้ร่วมกับ useBranches สำหรับ branch list
+ * useCustomers — fetch รายการลูกค้าจาก API
+ * ส่ง params ทุกตัวไปให้ backend: search, branch, status, sort_by, sort_order
+ * ไม่ทำ client-side filtering/sorting เพื่อให้ข้อมูลตรงกับ backend เสมอ
  */
 export function useCustomers(options = {}) {
-  const { search = '', branch = '', status = '', sortBy = 'created_at', sortOrder = 'desc' } = options;
+  const {
+    search = "",
+    branch = "",
+    status = "",
+    sortBy = "created_at",
+    sortOrder = "desc",
+  } = options;
 
   const [customers, setCustomers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -16,16 +23,22 @@ export function useCustomers(options = {}) {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await fetchCustomers({ search, branch, status, sortBy, sortOrder });
+      const data = await fetchCustomers({
+        search,
+        branch,
+        status,
+        sortBy,
+        sortOrder,
+      });
       setCustomers(data || []);
     } catch (err) {
-      console.error('Failed to fetch customers:', err);
-      setError('ไม่สามารถโหลดข้อมูลรายชื่อลูกค้าได้');
+      console.error("Failed to fetch customers:", err);
+      setError("ไม่สามารถโหลดข้อมูลรายชื่อลูกค้าได้");
       setCustomers([]);
     } finally {
       setIsLoading(false);
     }
-  }, [search, branch, status, sortBy, sortOrder]);
+  }, [search, branch, status, sortBy, sortOrder]); // re-fetch ทุกครั้งที่ param เปลี่ยน
 
   useEffect(() => {
     loadCustomers();
@@ -40,4 +53,3 @@ export function useCustomers(options = {}) {
 }
 
 export default useCustomers;
-
