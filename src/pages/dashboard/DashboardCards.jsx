@@ -6,10 +6,12 @@ import PeopleIcon from '@mui/icons-material/People';
 import StarIcon from '@mui/icons-material/Star';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
-import { useCX } from '../../hooks/useCX';
 
-export default function DashboardCards() {
-  const { summaryStats, selectedStatus, setSelectedStatus } = useCX();
+export default function DashboardCards({
+  summaryStats = { totalCustomers: 0, avgRating: '0.0', overdueCount: 0, satisfactionRate: '0' },
+  selectedStatus = '',
+  setSelectedStatus = () => {},
+}) {
 
   const cards = [
     {

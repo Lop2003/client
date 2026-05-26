@@ -10,7 +10,6 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip as RechartTooltip, ResponsiveContainer,
   Cell, PieChart, Pie, LineChart, Line, CartesianGrid,
 } from 'recharts';
-import { useCX } from '../../hooks/useCX';
 
 const CustomTooltip = ({ active, payload, unit = 'ราย' }) => {
   if (!active || !payload?.length) return null;
@@ -28,8 +27,12 @@ const CustomTooltip = ({ active, payload, unit = 'ราย' }) => {
   );
 };
 
-export default function DashboardCharts() {
-  const { branchStats, filteredFeedbacks, selectedBranch, setSelectedBranch } = useCX();
+export default function DashboardCharts({
+  branchStats = [],
+  filteredFeedbacks = [],
+  selectedBranch = '',
+  setSelectedBranch = () => {},
+}) {
 
   // 1. Bar chart: customers by branch (top 5)
   const branchCountsData = useMemo(() => {

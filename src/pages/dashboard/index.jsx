@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -16,8 +15,13 @@ import ListAltIcon from '@mui/icons-material/ListAlt';
 import DashboardCards from './DashboardCards';
 import DashboardCharts from './DashboardCharts';
 import CustomerTable from '../customers/CustomerTable';
-import { useCX } from '../../hooks/useCX';
-import * as api from '../../services/api';
+import { useNavigate } from 'react-router-dom';
+import { useCustomers } from '../../hooks/useCustomers';
+import { useDashboardStats } from '../../hooks/useDashboardStats';
+import { useCustomerFilters } from '../../hooks/useCustomerFilters';
+import { useBranches } from '../../hooks/useBranches';
+import { useFeedbacks } from '../../hooks/useFeedbacks';
+import { PATHS } from '../../routes/paths';
 
 const SECTION_TITLE_SX = {
   fontSize: '0.75rem', fontWeight: 800, color: '#64748b',
@@ -26,30 +30,36 @@ const SECTION_TITLE_SX = {
 };
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
+
   const {
     searchQuery, setSearchQuery,
-    selectedStatus, setSelectedStatus,
     selectedBranch, setSelectedBranch,
+    selectedStatus, setSelectedStatus,
+    sortBy, setSortBy,
+    sortOrder, setSortOrder,
     resetFilters,
-  } = useCX();
+    hasFilters,
+  } = useCustomerFilters();
 
-  const [branches, setBranches] = useState([]);
-  const [isFetchingBranches, setIsFetchingBranches] = useState(false);
+  const { summaryStats, branchStats, customerBranchMap } = useDashboardStats({
+    branch: selectedBranch,
+  });
 
-  const handleFetchBranches = async () => {
-    if (branches.length > 0 || isFetchingBranches) return;
-    setIsFetchingBranches(true);
-    try {
-      const stats = await api.fetchBranchStats();
-      setBranches([...new Set(stats.map(s => s.branch))]);
-    } catch {
-      setBranches(['วงเวียนใหญ่', 'รังสิต', 'ลาดพร้าว', 'สยาม']);
-    } finally {
-      setIsFetchingBranches(false);
-    }
-  };
+  const { customers } = useCustomers({
+    search: searchQuery,
+    branch: selectedBranch,
+    status: selectedStatus,
+    sortBy,
+    sortOrder,
+  });
 
-  const hasFilters = searchQuery || selectedStatus || selectedBranch;
+  const { branches } = useBranches();
+
+  const { filteredFeedbacks } = useFeedbacks({
+    branch: selectedBranch,
+    customerBranchMap,
+  });
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -78,7 +88,7 @@ export default function DashboardPage() {
             }}
           />
 
-          <FormControl size="small" sx={{ minWidth: 160 }} onMouseEnter={handleFetchBranches}>
+          <FormControl size="small" sx={{ minWidth: 160 }}>
             <Select
               value={selectedBranch}
               onChange={e => setSelectedBranch(e.target.value)}
@@ -127,7 +137,11 @@ export default function DashboardPage() {
             </Typography>
           )}
         </Box>
-        <DashboardCards />
+        <DashboardCards
+          summaryStats={summaryStats}
+          selectedStatus={selectedStatus}
+          setSelectedStatus={setSelectedStatus}
+        />
       </Box>
 
       {/* ── Section 2: Charts ── */}
@@ -135,7 +149,12 @@ export default function DashboardPage() {
         <Typography sx={{ ...SECTION_TITLE_SX, mb: 1.5 }}>
           <PieChartIcon sx={{ fontSize: 13, color: '#9ca3af' }} /> การวิเคราะห์และแนวโน้มความพึงพอใจ (Charts &amp; Graphs)
         </Typography>
-        <DashboardCharts />
+        <DashboardCharts
+          branchStats={branchStats}
+          filteredFeedbacks={filteredFeedbacks}
+          selectedBranch={selectedBranch}
+          setSelectedBranch={setSelectedBranch}
+        />
       </Box>
 
       {/* ── Section 3: Customer Table ── */}
@@ -144,7 +163,14 @@ export default function DashboardPage() {
           <ListAltIcon sx={{ fontSize: 13, color: '#9ca3af' }} /> บัญชีรายชื่อลูกค้าสัญญา{selectedBranch ? ` เฉพาะสาขา ${selectedBranch}` : ' ทั้งหมดในระบบ'}
         </Typography>
 
-        <CustomerTable />
+        <CustomerTable
+          customers={customers}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          sortOrder={sortOrder}
+          setSortOrder={setSortOrder}
+          onRowClick={id => navigate(`${PATHS.CUSTOMERS}?id=${id}`)}
+        />
       </Box>
 
     </Box>

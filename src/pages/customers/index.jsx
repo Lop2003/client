@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -8,9 +8,11 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Paper from '@mui/material/Paper';
 import SearchIcon from '@mui/icons-material/Search';
+import { useSearchParams } from 'react-router-dom';
 import CustomerTable from './CustomerTable';
 import CustomerDetailModal from './CustomerDetailModal';
-import { useCX } from '../../hooks/useCX';
+import { useCustomers } from '../../hooks/useCustomers';
+import { useBranches } from '../../hooks/useBranches';
 
 const StatCard = ({ label, value, color, isActive, onClick }) => (
   <Box
@@ -35,38 +37,34 @@ const StatCard = ({ label, value, color, isActive, onClick }) => (
 );
 
 export default function CustomersPage() {
-  const {
-    customers, isDetailModalOpen,
-    searchQuery, setSearchQuery,
-    selectedBranch, setSelectedBranch,
-    selectedStatus, setSelectedStatus,
-    branchStats,
-  } = useCX();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedCustomerId = searchParams.get('id');
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedBranch, setSelectedBranch] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [sortBy, setSortBy] = useState('created_at');
+  const [sortOrder, setSortOrder] = useState('desc');
+
+  const { customers } = useCustomers({
+    search: searchQuery,
+    branch: selectedBranch,
+    status: selectedStatus,
+    sortBy,
+    sortOrder,
+  });
+
+  const { branches: uniqueBranches } = useBranches();
 
   const total     = customers.length;
   const active    = customers.filter(c => c.status === 'active').length;
   const overdue   = customers.filter(c => c.status === 'overdue').length;
   const completed = customers.filter(c => c.status === 'completed').length;
 
-  // Compute unique list of branches dynamically from stats and data, with standard static fallbacks
-  const uniqueBranches = useMemo(() => {
-    const list = new Set();
-    if (branchStats && branchStats.length > 0) {
-      branchStats.forEach(s => {
-        if (s.branch) list.add(s.branch);
-      });
-    }
-    if (customers && customers.length > 0) {
-      customers.forEach(c => {
-        if (c.branch) list.add(c.branch);
-      });
-    }
-    const fallback = ['วงเวียนใหญ่', 'รังสิต', 'ลาดพร้าว', 'สยาม', 'เชียงใหม่ นิมาน', 'ขอนแก่น มข.', 'หาดใหญ่ เซ็นทรัล', 'ชลบุรี อมตะ'];
-    if (list.size === 0) {
-      return fallback;
-    }
-    return [...list].sort();
-  }, [branchStats, customers]);
+
+  const handleCloseModal = () => {
+    setSearchParams({});
+  };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -124,10 +122,23 @@ export default function CustomersPage() {
       </Paper>
 
       {/* Table */}
-      <CustomerTable />
+      <CustomerTable
+        customers={customers}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
+        onRowClick={id => setSearchParams({ id })}
+      />
 
       {/* Detail Modal */}
-      {isDetailModalOpen && <CustomerDetailModal />}
+      {!!selectedCustomerId && (
+        <CustomerDetailModal
+          selectedCustomerId={selectedCustomerId}
+          isOpen={!!selectedCustomerId}
+          onClose={handleCloseModal}
+        />
+      )}
     </Box>
   );
 }

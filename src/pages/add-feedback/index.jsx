@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -18,7 +18,8 @@ import StarBorderIcon from '@mui/icons-material/StarBorder';
 import StarIcon from '@mui/icons-material/Star';
 import CheckIcon from '@mui/icons-material/Check';
 import SearchableCustomerDropdown from '../../components/SearchableCustomerDropdown';
-import { useCX } from '../../hooks/useCX';
+import { useCustomers } from '../../hooks/useCustomers';
+import { useAddFeedback } from '../../hooks/useAddFeedback';
 import { PATHS } from '../../routes/paths';
 
 const CATEGORIES = [
@@ -38,40 +39,25 @@ const RATING_LABELS = {
 
 export default function AddFeedbackPage() {
   const navigate = useNavigate();
-  const { selectedCustomerId: globalId, customers, addFeedback } = useCX();
+  const { customers } = useCustomers({ sortBy: 'name', sortOrder: 'asc' });
 
-  const [customerId, setCustomerId] = useState(globalId || '');
-  const [rating, setRating] = useState(5);
-  const [hoverRating, setHoverRating] = useState(-1);
-  const [comment, setComment] = useState('');
-  const [category, setCategory] = useState('service');
-  const [error, setError] = useState('');
+  const {
+    customerId,
+    setCustomerId,
+    rating,
+    setRating,
+    hoverRating,
+    setHoverRating,
+    comment,
+    setComment,
+    category,
+    setCategory,
+    error,
+    setError,
+    handleSubmit,
+  } = useAddFeedback();
 
   const selectedCust = customers.find(c => c.id === customerId);
-
-  useEffect(() => {
-    if (globalId) setCustomerId(globalId);
-  }, [globalId]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!customerId) { setError('กรุณาเลือกบัญชีลูกค้าเพื่อบันทึกคำติชม'); return; }
-    if (!comment.trim()) { setError('กรุณากรอกความคิดเห็นหรือรายละเอียดคำติชม'); return; }
-
-    const success = await addFeedback({
-      customer_id: customerId,
-      rating,
-      comment: comment.trim(),
-      category,
-    });
-    if (success) {
-      setCustomerId('');
-      setRating(5);
-      setComment('');
-      setCategory('service');
-      setError('');
-    }
-  };
 
   const displayRating = hoverRating !== -1 ? hoverRating : rating;
 

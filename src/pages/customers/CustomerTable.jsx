@@ -13,7 +13,6 @@ import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { useCX } from '../../hooks/useCX';
 import { getCustomerStatus } from '../../utils/statusHelpers';
 import { formatContractId } from '../../utils/formatters';
 
@@ -28,23 +27,24 @@ const HEAD_CELLS = [
   { id: 'actions',    label: 'การจัดการ', sortable: false, align: 'right' },
 ];
 
-export default function CustomerTable() {
-  const {
-    customers, navigateToCustomerDetail,
-    searchQuery, selectedBranch, selectedStatus,
-    sortBy, setSortBy, sortOrder, setSortOrder,
-  } = useCX();
-
+export default function CustomerTable({
+  customers = [],
+  sortBy = 'created_at',
+  setSortBy,
+  sortOrder = 'desc',
+  setSortOrder,
+  onRowClick,
+}) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  // Reset page when filters change
+  // Reset page when customers list changes
   useEffect(() => {
     setPage(0);
-  }, [searchQuery, selectedBranch, selectedStatus]);
+  }, [customers]);
 
   const handleSort = (field) => {
-    if (!field) return;
+    if (!field || !setSortBy || !setSortOrder) return;
     if (sortBy === field) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
@@ -116,7 +116,7 @@ export default function CustomerTable() {
                   <TableRow
                     key={c.id}
                     hover
-                    onClick={() => navigateToCustomerDetail(c.id)}
+                    onClick={() => onRowClick && onRowClick(c.id)}
                     sx={{
                       cursor: 'pointer',
                       bgcolor: isOverdue ? '#FFF0F2' : 'inherit',

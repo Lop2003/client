@@ -17,7 +17,6 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import CloseIcon from '@mui/icons-material/Close';
 import PersonIcon from '@mui/icons-material/Person';
 import { PATHS } from '../routes/paths';
-import { useCX } from '../hooks/useCX';
 
 const NAV_ITEMS = [
   { label: 'แดชบอร์ด',        path: PATHS.DASHBOARD,    icon: <DashboardIcon fontSize="small" /> },
@@ -33,12 +32,8 @@ const EXPANDED_WIDTH = 240;
 export default function Sidebar({ isCollapsed, onToggleCollapse, isMobileOpen, onCloseMobile }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setSelectedCustomerId } = useCX();
 
   const handleNav = (path) => {
-    if (path === PATHS.ADD_FEEDBACK || path === PATHS.FOLLOW_UP) {
-      setSelectedCustomerId('');
-    }
     navigate(path);
     onCloseMobile?.();
   };

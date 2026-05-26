@@ -22,8 +22,8 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import CheckIcon from '@mui/icons-material/Check';
 import { useNavigate } from 'react-router-dom';
-import { useCX } from '../../hooks/useCX';
-import { fetchCustomerDetail, updateFollowUpStatus } from '../../services/api';
+import { useCustomerDetail } from '../../hooks/useCustomerDetail';
+import { updateFollowUpStatus } from '../../services/followUpMutations';
 import { showToast } from '../../components/Toast';
 import { getCustomerStatus, getSentiment, getFeedbackCategory, getFollowUpType } from '../../utils/statusHelpers';
 import { formatDate, formatContractId } from '../../utils/formatters';
@@ -249,48 +249,25 @@ function FollowUpLog({ followUps, customerId, onRefresh }) {
 }
 
 // ─── Main Modal ──────────────────────────────────────────────────────────────
-export default function CustomerDetailModal() {
-  const { isDetailModalOpen, setIsDetailModalOpen, selectedCustomerId, customers } = useCX();
+export default function CustomerDetailModal({ selectedCustomerId, isOpen, onClose }) {
   const navigate = useNavigate();
+  const { customer, isLoading: detailLoading, refetch: loadDetail } = useCustomerDetail(selectedCustomerId);
 
-  const [apiDetail, setApiDetail] = useState(null);
-  const [detailLoading, setDetailLoading] = useState(false);
-
-  const customer = customers.find(c => c.id === selectedCustomerId);
-
-  const loadDetail = () => {
-    if (!selectedCustomerId) return;
-    let cancelled = false;
-    setDetailLoading(true);
-    fetchCustomerDetail(selectedCustomerId)
-      .then(data => {
-        if (!cancelled) setApiDetail({ feedbacks: data.feedbacks || [], follow_ups: data.follow_ups || [] });
-      })
-      .catch(() => { if (!cancelled) setApiDetail(null); })
-      .finally(() => { if (!cancelled) setDetailLoading(false); });
-    return () => { cancelled = true; };
-  };
-
-  useEffect(() => {
-    const cancel = loadDetail();
-    return cancel;
-  }, [selectedCustomerId]);
-
-  const handleClose = () => setIsDetailModalOpen(false);
+  const handleClose = () => onClose && onClose();
 
   const handleAddFeedback = () => {
-    setIsDetailModalOpen(false);
-    navigate(PATHS.ADD_FEEDBACK);
+    handleClose();
+    navigate(PATHS.ADD_FEEDBACK, { state: { customerId: selectedCustomerId } });
   };
 
   const handleAddFollowUp = () => {
-    setIsDetailModalOpen(false);
-    navigate(PATHS.FOLLOW_UP);
+    handleClose();
+    navigate(PATHS.FOLLOW_UP, { state: { customerId: selectedCustomerId } });
   };
 
   return (
     <Dialog
-      open={isDetailModalOpen}
+      open={isOpen}
       onClose={handleClose}
       maxWidth="lg"
       fullWidth
@@ -357,9 +334,9 @@ export default function CustomerDetailModal() {
 
             {/* Feedback + FollowUp Grid */}
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' }, gap: 2.5 }}>
-              <FeedbackHistory feedbacks={apiDetail?.feedbacks ?? []} />
+              <FeedbackHistory feedbacks={customer?.feedbacks ?? []} />
               <FollowUpLog
-                followUps={apiDetail?.follow_ups ?? []}
+                followUps={customer?.follow_ups ?? []}
                 customerId={selectedCustomerId}
                 onRefresh={loadDetail}
               />

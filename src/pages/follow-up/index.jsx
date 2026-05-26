@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -17,7 +17,8 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import CheckIcon from '@mui/icons-material/Check';
 import SearchableCustomerDropdown from '../../components/SearchableCustomerDropdown';
-import { useCX } from '../../hooks/useCX';
+import { useCustomers } from '../../hooks/useCustomers';
+import { useAddFollowUp } from '../../hooks/useAddFollowUp';
 import { PATHS } from '../../routes/paths';
 
 const FOLLOW_UP_TYPES = [
@@ -28,37 +29,20 @@ const FOLLOW_UP_TYPES = [
 
 export default function FollowUpPage() {
   const navigate = useNavigate();
-  const { selectedCustomerId: globalId, customers, addFollowUp } = useCX();
+  const { customers } = useCustomers({ sortBy: 'name', sortOrder: 'asc' });
 
-  const [customerId, setCustomerId] = useState(globalId || '');
-  const [type, setType] = useState('payment_remind');
-  const [note, setNote] = useState('');
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (globalId) setCustomerId(globalId);
-  }, [globalId]);
-
-  const selectedCust = customers.find(c => c.id === customerId);
-
-  // Auto-switch to payment_remind when overdue customer selected
-  useEffect(() => {
-    if (selectedCust?.status === 'overdue') {
-      setType('payment_remind');
-    }
-  }, [customerId, selectedCust]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!customerId) { setError('กรุณาเลือกรายชื่อลูกค้าเพื่อบันทึกการติดตาม'); return; }
-    if (!note.trim()) { setError('กรุณากรอกบันทึกรายละเอียดการโทรติดตามลูกค้า'); return; }
-
-    const success = await addFollowUp({ customer_id: customerId, type, note: note.trim() });
-    if (success) {
-      setNote('');
-      setError('');
-    }
-  };
+  const {
+    customerId,
+    setCustomerId,
+    type,
+    setType,
+    note,
+    setNote,
+    error,
+    setError,
+    handleSubmit,
+    selectedCust,
+  } = useAddFollowUp({ customers });
 
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', py: 2 }}>
