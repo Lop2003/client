@@ -1,15 +1,16 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { fetchSummary, fetchBranchStats } from "../services/statsService";
+import { fetchFeedbackStats } from "../services/feedbackService";
 
 /**
- * useDashboardStats — fetch summary + branch stats สำหรับ dashboard
- * ไม่ดึง customers ทั้งหมดแล้ว — ย้ายไป filter ที่ backend แทน
+ * useDashboardStats — fetch summary + branch stats + feedback stats สำหรับ dashboard
  */
 export function useDashboardStats(options = {}) {
   const { branch = "" } = options;
 
   const [apiSummary, setApiSummary] = useState(null);
   const [branchStats, setBranchStats] = useState([]);
+  const [apiFeedbackStats, setApiFeedbackStats] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -17,10 +18,11 @@ export function useDashboardStats(options = {}) {
     setIsLoading(true);
     setError(null);
     try {
-      const [summaryResult, branchResult] =
+      const [summaryResult, branchResult, feedbackStatsResult] =
         await Promise.allSettled([
           fetchSummary(),
           fetchBranchStats(),
+          fetchFeedbackStats(branch),
         ]);
 
       if (summaryResult.status === "fulfilled") {
@@ -35,7 +37,12 @@ export function useDashboardStats(options = {}) {
         console.error("fetchBranchStats failed:", branchResult.reason);
       }
 
-      // แสดง error เฉพาะเมื่อ summary หลักโหลดไม่ได้
+      if (feedbackStatsResult.status === "fulfilled") {
+        setApiFeedbackStats(feedbackStatsResult.value);
+      } else {
+        console.error("fetchFeedbackStats failed:", feedbackStatsResult.reason);
+      }
+
       if (
         summaryResult.status === "rejected" &&
         branchResult.status === "rejected"
@@ -48,7 +55,7 @@ export function useDashboardStats(options = {}) {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [branch]);
 
   useEffect(() => {
     loadData();
@@ -56,34 +63,47 @@ export function useDashboardStats(options = {}) {
 
   // Compute summary stats dynamically สำหรับ branch ที่เลือก หรือ overall
   const summaryStats = useMemo(() => {
-    if (branch && branchStats.length > 0) {
-      const bStat = branchStats.find((s) => s.branch === branch);
-      if (bStat) {
-        return {
-          totalCustomers: bStat.customer_count,
-          avgRating: bStat.avg_rating.toFixed(1),
-          overdueCount: bStat.overdue_count,
-          satisfactionRate: ((bStat.avg_rating / 5) * 100).toFixed(0),
-        };
-      }
-    }
-    if (apiSummary) {
-      return {
-        totalCustomers: apiSummary.total_customers,
-        avgRating: apiSummary.avg_rating.toFixed(1),
-        overdueCount: apiSummary.overdue_count,
-        satisfactionRate: "0", // คำนวณจาก useFeedbacks แทน
-      };
-    }
-    return {
+    let stats = {
       totalCustomers: 0,
       avgRating: "0.0",
       overdueCount: 0,
       satisfactionRate: "0",
+      positiveCount: 0,
+      neutralCount: 0,
+      negativeCount: 0,
+      weeklyCSAT: [4.0, 4.0, 4.0, 4.0],
     };
-  }, [apiSummary, branch, branchStats]);
 
-  // Compute branch list จาก branchStats เพื่อใช้แทน useBranches
+    if (branch && branchStats.length > 0) {
+      const bStat = branchStats.find((s) => s.branch === branch);
+      if (bStat) {
+        stats.totalCustomers = bStat.customer_count;
+        stats.avgRating = bStat.avg_rating.toFixed(1);
+        stats.overdueCount = bStat.overdue_count;
+      }
+    } else if (apiSummary) {
+      stats.totalCustomers = apiSummary.total_customers;
+      stats.avgRating = apiSummary.avg_rating.toFixed(1);
+      stats.overdueCount = apiSummary.overdue_count;
+    }
+
+    if (apiFeedbackStats) {
+      const totalFeedbacks = apiFeedbackStats.positive_count + apiFeedbackStats.neutral_count + apiFeedbackStats.negative_count;
+      stats.satisfactionRate = totalFeedbacks > 0 
+        ? ((apiFeedbackStats.positive_count / totalFeedbacks) * 100).toFixed(0)
+        : "0";
+      stats.positiveCount = apiFeedbackStats.positive_count;
+      stats.neutralCount = apiFeedbackStats.neutral_count;
+      stats.negativeCount = apiFeedbackStats.negative_count;
+      stats.weeklyCSAT = apiFeedbackStats.weekly_csat || [4.0, 4.0, 4.0, 4.0];
+      // ใช้ average rating จริงๆ ของ feedbacks สำหรับความพึงพอใจ
+      stats.avgRating = apiFeedbackStats.avg_rating.toFixed(1);
+    }
+
+    return stats;
+  }, [apiSummary, apiFeedbackStats, branch, branchStats]);
+
+  // Compute branch list จาก branchStats
   const branches = useMemo(() => {
     if (!branchStats || branchStats.length === 0) return [];
     const list = [...new Set(branchStats.map(s => s.branch).filter(Boolean))];
@@ -99,5 +119,3 @@ export function useDashboardStats(options = {}) {
     refetch: loadData,
   };
 }
-
-export default useDashboardStats;

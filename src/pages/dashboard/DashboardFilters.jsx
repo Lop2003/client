@@ -1,35 +1,21 @@
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import Button from '@mui/material/Button';
-import SearchIcon from '@mui/icons-material/Search';
+import Typography from '@mui/material/Typography';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 
 /**
- * DashboardFilters — filter bar สำหรับหน้า Dashboard
- * @param {string}   searchQuery
- * @param {Function} setSearchQuery
+ * DashboardFilters — filter bar สำหรับเลือกสาขาในหน้า Dashboard
  * @param {string}   selectedBranch
  * @param {Function} setSelectedBranch
- * @param {string}   selectedStatus
- * @param {Function} setSelectedStatus
- * @param {string[]} branches          - รายชื่อสาขา
- * @param {boolean}  hasFilters        - มี active filter หรือไม่
- * @param {Function} resetFilters
+ * @param {string[]} branches          - รายชื่อสาขาทั้งหมด
  */
 export default function DashboardFilters({
-  searchQuery,
-  setSearchQuery,
   selectedBranch,
   setSelectedBranch,
-  selectedStatus,
-  setSelectedStatus,
-  branches,
-  hasFilters,
-  resetFilters,
+  branches = [],
 }) {
   return (
     <Paper
@@ -39,67 +25,42 @@ export default function DashboardFilters({
         borderRadius: 3,
         display: 'flex',
         flexWrap: 'wrap',
-        gap: 1.5,
+        gap: 2,
         alignItems: 'center',
         borderColor: 'divider',
+        background: 'linear-gradient(to right, #ffffff, #fcfcfd)',
       }}
     >
-      {/* Search */}
-      <TextField
-        value={searchQuery}
-        onChange={e => setSearchQuery(e.target.value)}
-        placeholder="ค้นหาชื่อลูกค้า, เบอร์โทร, สินค้าผ่อน..."
-        sx={{ flex: 1, minWidth: 200 }}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
-            </InputAdornment>
-          ),
-        }}
-      />
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <FilterAltIcon sx={{ fontSize: 18, color: 'primary.main' }} />
+        <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'text.secondary' }}>
+          เลือกดูข้อมูลรายสาขา:
+        </Typography>
+      </Box>
 
       {/* Branch filter */}
-      <FormControl size="small" sx={{ minWidth: 160 }}>
+      <FormControl size="small" sx={{ minWidth: 200 }}>
         <Select
           value={selectedBranch}
           onChange={e => setSelectedBranch(e.target.value)}
           displayEmpty
-          sx={{ borderRadius: 3, fontSize: '0.75rem' }}
+          sx={{ 
+            borderRadius: 3, 
+            fontSize: '0.75rem',
+            fontWeight: 600,
+            '& .MuiSelect-select': { py: 1 }
+          }}
         >
-          <MenuItem value=""><em>สาขา: ทั้งหมด</em></MenuItem>
+          <MenuItem value="" sx={{ fontSize: '0.75rem', fontWeight: 600 }}>
+            <em>สาขา: ทั้งหมดทุกสาขา</em>
+          </MenuItem>
           {branches.map(br => (
-            <MenuItem key={br} value={br}>{br}</MenuItem>
+            <MenuItem key={br} value={br} sx={{ fontSize: '0.75rem' }}>
+              สาขา: {br}
+            </MenuItem>
           ))}
         </Select>
       </FormControl>
-
-      {/* Status filter */}
-      <FormControl size="small" sx={{ minWidth: 180 }}>
-        <Select
-          value={selectedStatus}
-          onChange={e => setSelectedStatus(e.target.value)}
-          displayEmpty
-          sx={{ borderRadius: 3, fontSize: '0.75rem' }}
-        >
-          <MenuItem value=""><em>สถานะ: ทั้งหมด</em></MenuItem>
-          <MenuItem value="active">ปกติ (Active)</MenuItem>
-          <MenuItem value="overdue">ค้างชำระ (Overdue)</MenuItem>
-          <MenuItem value="completed">จบสัญญา (Completed)</MenuItem>
-        </Select>
-      </FormControl>
-
-      {/* Reset button */}
-      {hasFilters && (
-        <Button
-          size="small"
-          variant="outlined"
-          onClick={resetFilters}
-          sx={{ borderRadius: 3, fontSize: '0.6875rem', px: 2 }}
-        >
-          รีเซ็ต
-        </Button>
-      )}
     </Paper>
   );
 }

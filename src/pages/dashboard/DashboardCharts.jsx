@@ -14,10 +14,14 @@ import {
 const CustomTooltip = ({ active, payload, unit = 'ราย' }) => {
   if (!active || !payload?.length) return null;
   return (
-    <Box sx={{ bgcolor: '#1e293b', border: '1px solid #334155', color: '#fff',
-                p: 1.25, borderRadius: 2, boxShadow: 4 }}>
-      <Typography sx={{ fontSize: '0.6875rem', color: '#94a3b8', fontWeight: 800,
-                        textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.25 }}>
+    <Box sx={{
+      bgcolor: '#1e293b', border: '1px solid #334155', color: '#fff',
+      p: 1.25, borderRadius: 2, boxShadow: 4
+    }}>
+      <Typography sx={{
+        fontSize: '0.6875rem', color: '#94a3b8', fontWeight: 800,
+        textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.25
+      }}>
         {payload[0].payload.name}
       </Typography>
       <Typography sx={{ fontSize: '0.875rem', fontWeight: 900 }}>
@@ -29,9 +33,9 @@ const CustomTooltip = ({ active, payload, unit = 'ราย' }) => {
 
 export default function DashboardCharts({
   branchStats = [],
-  filteredFeedbacks = [],
+  summaryStats = { positiveCount: 0, neutralCount: 0, negativeCount: 0, weeklyCSAT: [4.0, 4.0, 4.0, 4.0] },
   selectedBranch = '',
-  setSelectedBranch = () => {},
+  setSelectedBranch = () => { },
 }) {
 
   // 1. Bar chart: customers by branch (top 5)
@@ -46,51 +50,31 @@ export default function DashboardCharts({
 
   // 2. Pie chart: sentiment proportion
   const sentimentData = useMemo(() => {
-    const total = filteredFeedbacks.length || 1;
-    const pos = filteredFeedbacks.filter(fb => fb.sentiment === 'positive').length;
-    const neu = filteredFeedbacks.filter(fb => fb.sentiment === 'neutral').length;
-    const neg = filteredFeedbacks.filter(fb => fb.sentiment === 'negative').length;
+    const total = (summaryStats.positiveCount + summaryStats.neutralCount + summaryStats.negativeCount) || 1;
+    const pos = summaryStats.positiveCount;
+    const neu = summaryStats.neutralCount;
+    const neg = summaryStats.negativeCount;
     const pPos = Math.round((pos / total) * 100);
     const pNeu = Math.round((neu / total) * 100);
     const pNeg = Math.round((neg / total) * 100);
     return {
       percentage: pPos,
       chartData: [
-        { name: 'พอใจ (Positive)',   value: pPos, color: '#057A55' },
-        { name: 'เฉยๆ (Neutral)',    value: pNeu, color: '#92400E' },
+        { name: 'พอใจ (Positive)', value: pPos, color: '#057A55' },
+        { name: 'เฉยๆ (Neutral)', value: pNeu, color: '#92400E' },
         { name: 'ไม่พอใจ (Negative)', value: pNeg, color: '#C81E1E' },
       ],
     };
-  }, [filteredFeedbacks]);
+  }, [summaryStats]);
 
   // 3. Line chart: weekly CSAT trend
   const weeklyTrendsData = useMemo(() => {
-    if (filteredFeedbacks.length === 0) {
-      return [1,2,3,4].map(i => ({ name: `สัปดาห์ ${i}`, score: 4.0 }));
-    }
-    const sorted = [...filteredFeedbacks].sort(
-      (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-    );
-    const minTime = new Date(sorted[0].created_at).getTime();
-    const maxTimeRaw = new Date(sorted[sorted.length - 1].created_at).getTime();
-    const maxTime = minTime === maxTimeRaw ? minTime + 1000 * 60 * 60 * 24 * 28 : maxTimeRaw;
-    const interval = (maxTime - minTime) / 4;
-    let lastAvg = 4.0;
-    return [0, 1, 2, 3].map(i => {
-      const start = minTime + i * interval;
-      const end = start + interval;
-      const periodFbs = sorted.filter(fb => {
-        const t = new Date(fb.created_at).getTime();
-        return t >= start && t < end;
-      });
-      let avg = lastAvg;
-      if (periodFbs.length > 0) {
-        avg = periodFbs.reduce((acc, f) => acc + f.rating, 0) / periodFbs.length;
-        lastAvg = avg;
-      }
-      return { name: `สัปดาห์ ${i + 1}`, score: parseFloat(avg.toFixed(1)) };
-    });
-  }, [filteredFeedbacks]);
+    const csat = summaryStats.weeklyCSAT || [4.0, 4.0, 4.0, 4.0];
+    return csat.map((score, i) => ({
+      name: `สัปดาห์ ${i + 1}`,
+      score: score,
+    }));
+  }, [summaryStats]);
 
   const handleBarClick = (data) => {
     if (data?.name) {
@@ -105,15 +89,21 @@ export default function DashboardCharts({
   };
 
   const CardHeader = ({ iconBg, iconColor, icon, title, subtitle }) => (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5, pb: 2,
-                borderBottom: '1px solid #f3f4f6' }}>
-      <Box sx={{ width: 32, height: 32, borderRadius: 2, bgcolor: iconBg,
-                  color: iconColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <Box sx={{
+      display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5, pb: 2,
+      borderBottom: '1px solid #f3f4f6'
+    }}>
+      <Box sx={{
+        width: 32, height: 32, borderRadius: 2, bgcolor: iconBg,
+        color: iconColor, display: 'flex', alignItems: 'center', justifyContent: 'center'
+      }}>
         {icon}
       </Box>
       <Box>
-        <Typography sx={{ fontSize: '0.75rem', fontWeight: 800, color: '#111827',
-                          textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <Typography sx={{
+          fontSize: '0.75rem', fontWeight: 800, color: '#111827',
+          textTransform: 'uppercase', letterSpacing: '0.05em'
+        }}>
           {title}
         </Typography>
         <Typography sx={{ fontSize: '0.6875rem', color: '#64748b' }}>{subtitle}</Typography>
@@ -169,8 +159,10 @@ export default function DashboardCharts({
             title="สัดส่วน Sentiment"
             subtitle="วิเคราะห์อารมณ์รวมของคำประเมินติชม"
           />
-          <Box sx={{ height: 256, display: 'flex', flexDirection: { xs: 'column', sm: 'row' },
-                      alignItems: 'center', justifyContent: 'center', gap: 3, px: 1 }}>
+          <Box sx={{
+            height: 256, display: 'flex', flexDirection: { xs: 'column', sm: 'row' },
+            alignItems: 'center', justifyContent: 'center', gap: 3, px: 1
+          }}>
             <Box sx={{ position: 'relative', width: 144, height: 144, flexShrink: 0 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -183,10 +175,14 @@ export default function DashboardCharts({
                   </Pie>
                 </PieChart>
               </ResponsiveContainer>
-              <Box sx={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
-                          alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
-                <Typography sx={{ fontSize: '0.6875rem', color: '#9ca3af', fontWeight: 800,
-                                  textTransform: 'uppercase', letterSpacing: '0.05em' }}>เชิงบวก</Typography>
+              <Box sx={{
+                position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center', pointerEvents: 'none'
+              }}>
+                <Typography sx={{
+                  fontSize: '0.6875rem', color: '#9ca3af', fontWeight: 800,
+                  textTransform: 'uppercase', letterSpacing: '0.05em'
+                }}>เชิงบวก</Typography>
                 <Typography sx={{ fontSize: '1rem', fontWeight: 900, color: '#057A55' }}>
                   {sentimentData.percentage}%
                 </Typography>
@@ -232,8 +228,10 @@ export default function DashboardCharts({
                   content={({ active, payload }) => {
                     if (!active || !payload?.length) return null;
                     return (
-                      <Box sx={{ bgcolor: '#1e293b', border: '1px solid #334155', color: '#fff',
-                                  p: 1, borderRadius: 2, boxShadow: 4 }}>
+                      <Box sx={{
+                        bgcolor: '#1e293b', border: '1px solid #334155', color: '#fff',
+                        p: 1, borderRadius: 2, boxShadow: 4
+                      }}>
                         <Typography sx={{ fontSize: '0.6875rem', color: '#94a3b8', mb: 0.25 }}>
                           {payload[0].payload.name}
                         </Typography>

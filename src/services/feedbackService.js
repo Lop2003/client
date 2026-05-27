@@ -11,3 +11,13 @@ export async function fetchFeedbacks(params = {}) {
   const qs = query.toString();
   return request(`/api/feedbacks${qs ? `?${qs}` : ""}`);
 }
+
+/**
+ * READ — ดึงข้อมูลสถิติ feedbacks สำหรับวาดกราฟ (avg_rating, sentiments, weekly_csat)
+ */
+export async function fetchFeedbackStats(branch) {
+  const url = branch
+    ? `/api/feedbacks/stats?branch=${encodeURIComponent(branch)}`
+    : '/api/feedbacks/stats';
+  return request(url);
+}

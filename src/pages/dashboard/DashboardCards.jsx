@@ -10,7 +10,7 @@ import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt
 export default function DashboardCards({
   summaryStats = { totalCustomers: 0, avgRating: '0.0', overdueCount: 0, satisfactionRate: '0' },
   selectedStatus = '',
-  setSelectedStatus = () => {},
+  setSelectedStatus = () => { },
 }) {
 
   const cards = [
@@ -28,6 +28,7 @@ export default function DashboardCards({
       valueColor: '#1e3a8a',
       subColor: 'rgba(0,81,186,0.7)',
       ring: '#0051BA',
+      noClick: true,
     },
     {
       key: '__avg',
@@ -60,6 +61,7 @@ export default function DashboardCards({
       subColor: '#C81E1E',
       ring: '#C81E1E',
       pulse: true,
+      noClick: true,
     },
     {
       key: '__sat',
@@ -91,7 +93,7 @@ export default function DashboardCards({
               background: card.bg,
               border: '1px solid',
               borderColor: isActive ? card.ring : 'rgba(255,255,255,0.6)',
-              borderRadius: 4,
+              borderRadius: 2,
               cursor: card.noClick ? 'default' : 'pointer',
               transition: 'all 0.25s',
               boxShadow: isActive
@@ -109,16 +111,20 @@ export default function DashboardCards({
               '&:active': card.noClick ? {} : { transform: 'scale(0.98)' },
             }}
           >
-             <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+            <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <Typography sx={{ fontSize: '0.75rem', fontWeight: 800, color: card.titleColor,
-                                  textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <Typography sx={{
+                  fontSize: '0.75rem', fontWeight: 800, color: card.titleColor,
+                  textTransform: 'uppercase', letterSpacing: '0.08em'
+                }}>
                   {card.title}
                 </Typography>
-                <Box sx={{ width: 32, height: 32, borderRadius: 2, bgcolor: card.iconBg,
-                            color: card.iconColor, display: 'flex', alignItems: 'center',
-                            justifyContent: 'center', transition: 'transform 0.3s',
-                            '.MuiCard-root:hover &': card.noClick ? {} : { transform: 'rotate(6deg) scale(1.1)' } }}>
+                <Box sx={{
+                  width: 32, height: 32, borderRadius: 2, bgcolor: card.iconBg,
+                  color: card.iconColor, display: 'flex', alignItems: 'center',
+                  justifyContent: 'center', transition: 'transform 0.3s',
+                  '.MuiCard-root:hover &': card.noClick ? {} : { transform: 'rotate(6deg) scale(1.1)' }
+                }}>
                   {card.icon}
                 </Box>
               </Box>
@@ -129,8 +135,10 @@ export default function DashboardCards({
                     {card.unit}
                   </Box>
                 </Typography>
-                <Typography sx={{ fontSize: '0.6875rem', fontWeight: 700, color: card.subColor, mt: 1,
-                                  display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Typography sx={{
+                  fontSize: '0.6875rem', fontWeight: 700, color: card.subColor, mt: 1,
+                  display: 'flex', alignItems: 'center', gap: 0.5
+                }}>
                   {card.key === 'overdue' ? (
                     <WarningAmberIcon sx={{ fontSize: 11, color: card.iconColor, flexShrink: 0 }} />
                   ) : (
@@ -143,6 +151,6 @@ export default function DashboardCards({
           </Card>
         );
       })}
-    </Box>
+    </Box >
   );
 }
