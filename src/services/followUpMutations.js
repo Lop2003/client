@@ -4,7 +4,7 @@ import { request } from "./apiClient";
  * WRITE — บันทึก follow-up ใหม่
  */
 export async function createFollowUp(payload) {
-  return request("/api/follow-ups/", {
+  return request("/api/follow-ups", {
     method: "POST",
     body: JSON.stringify(payload),
   });

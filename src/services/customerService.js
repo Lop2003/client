@@ -14,7 +14,7 @@ export async function fetchCustomers(params = {}) {
   if (params.page) query.append("page", params.page);
   if (params.limit) query.append("limit", params.limit);
   const qs = query.toString();
-  return request(`/api/customers/${qs ? `?${qs}` : ""}`);
+  return request(`/api/customers${qs ? `?${qs}` : ""}`);
 }
 
 // Request deduplication สำหรับ detail fetch

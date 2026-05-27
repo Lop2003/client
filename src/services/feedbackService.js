@@ -9,5 +9,5 @@ export async function fetchFeedbacks(params = {}) {
   if (params.category) query.append("category", params.category);
   if (params.rating) query.append("rating", params.rating);
   const qs = query.toString();
-  return request(`/api/feedbacks/${qs ? `?${qs}` : ""}`);
+  return request(`/api/feedbacks${qs ? `?${qs}` : ""}`);
 }

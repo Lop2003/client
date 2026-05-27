@@ -6,7 +6,7 @@ export async function fetchSummary() {
 
 export async function fetchBranchStats(branch) {
   const url = branch
-    ? `/api/stats/by-branch?branch=${encodeURIComponent(branch)}`
-    : '/api/stats/by-branch';
+    ? `/api/stats/branches?branch=${encodeURIComponent(branch)}`
+    : '/api/stats/branches';
   return request(url);
 }
