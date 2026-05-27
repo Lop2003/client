@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import { useSearchParams } from 'react-router-dom';
 import CustomerStatCards from './CustomerStatCards';
@@ -12,11 +12,23 @@ export default function CustomersPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedCustomerId = searchParams.get('id');
 
-  const [searchQuery, setSearchQuery]       = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedBranch, setSelectedBranch] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
-  const [sortBy, setSortBy]                 = useState('created_at');
-  const [sortOrder, setSortOrder]           = useState('desc');
+  const [sortBy, setSortBy] = useState('created_at');
+  const [sortOrder, setSortOrder] = useState('desc');
+
+  // Debounce search query to reduce excessive API calls
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
 
   const {
     customers,
@@ -27,7 +39,7 @@ export default function CustomersPage() {
     setPage,
     setLimit,
   } = useCustomers({
-    search: searchQuery,
+    search: debouncedSearch,
     branch: selectedBranch,
     status: selectedStatus,
     sortBy,

@@ -38,10 +38,10 @@ export default function DashboardCharts({
   setSelectedBranch = () => { },
 }) {
 
-  // 1. Bar chart: customers by branch (top 5)
+  // 1. Bar chart: customers by branch (All branches)
   const branchCountsData = useMemo(() => {
-    const topStats = [...branchStats].sort((a, b) => b.customer_count - a.customer_count).slice(0, 5);
-    return topStats.map(stat => ({
+    const sortedStats = [...branchStats].sort((a, b) => b.customer_count - a.customer_count);
+    return sortedStats.map(stat => ({
       name: stat.branch,
       count: stat.customer_count,
       isSelected: selectedBranch === stat.branch,

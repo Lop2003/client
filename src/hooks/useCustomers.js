@@ -3,8 +3,7 @@ import { fetchCustomers } from "../services/customerService";
 
 /**
  * useCustomers — fetch รายการลูกค้าจาก API พร้อม server-side pagination
- * ส่ง params ทุกตัวไปให้ backend: search, branch, status, sort_by, sort_order, page, limit
- * ไม่ทำ client-side filtering/sorting/pagination เพื่อให้ข้อมูลตรงกับ backend เสมอ
+ * ใช้ระบบ Active flag เพื่อแก้ไขปัญหา Async Race Condition เสมอ
  */
 export function useCustomers(options = {}) {
   const {
@@ -25,6 +24,7 @@ export function useCustomers(options = {}) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // loadCustomers สำหรับเรียกใช้แบบ manual refetch
   const loadCustomers = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -38,7 +38,6 @@ export function useCustomers(options = {}) {
         page: currentPage,
         limit: currentLimit,
       });
-      // data คือ PaginatedCustomerResponse: { items, total, page, limit, total_pages }
       setCustomers(data?.items || []);
       setTotal(data?.total ?? 0);
       setTotalPages(data?.total_pages ?? 1);
@@ -58,9 +57,49 @@ export function useCustomers(options = {}) {
     setCurrentPage(1);
   }, [search, branch, status, sortBy, sortOrder]);
 
+  // Fetch หลักที่ใช้ Active Flag เพื่อแก้ปัญหา Async Race Condition
   useEffect(() => {
-    loadCustomers();
-  }, [loadCustomers]);
+    let active = true;
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const data = await fetchCustomers({
+          search,
+          branch,
+          status,
+          sortBy,
+          sortOrder,
+          page: currentPage,
+          limit: currentLimit,
+        });
+        if (active) {
+          setCustomers(data?.items || []);
+          setTotal(data?.total ?? 0);
+          setTotalPages(data?.total_pages ?? 1);
+        }
+      } catch (err) {
+        if (active) {
+          console.error("Failed to fetch customers:", err);
+          setError("ไม่สามารถโหลดข้อมูลรายชื่อลูกค้าได้");
+          setCustomers([]);
+          setTotal(0);
+          setTotalPages(1);
+        }
+      } finally {
+        if (active) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      active = false;
+    };
+  }, [search, branch, status, sortBy, sortOrder, currentPage, currentLimit]);
 
   return {
     customers,
