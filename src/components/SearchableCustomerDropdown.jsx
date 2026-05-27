@@ -25,7 +25,7 @@ export default function SearchableCustomerDropdown({
       {label && (
         <Typography
           sx={{
-            fontSize: '0.75rem',
+            fontSize: '0.6875rem',
             fontWeight: 800,
             color: 'text.secondary',
             textTransform: 'uppercase',
@@ -66,7 +66,7 @@ export default function SearchableCustomerDropdown({
               startAdornment: (
                 <>
                   <InputAdornment position="start">
-                    <SearchIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
+                    <SearchIcon sx={{ fontSize: 16, color: 'text.secondary', mr: 0.5 }} />
                   </InputAdornment>
                   {params.InputProps.startAdornment}
                 </>
@@ -74,12 +74,13 @@ export default function SearchableCustomerDropdown({
             }}
             sx={{
               '& .MuiOutlinedInput-root': {
-                borderRadius: 3,
+                borderRadius: '12px',
                 fontSize: '0.75rem',
-                fontWeight: 600,
-                bgcolor: '#f8fafc',
-                '&:hover': { bgcolor: '#fff' },
-                '&.Mui-focused': { bgcolor: '#fff' },
+                fontWeight: 700,
+                bgcolor: 'rgba(255, 255, 255, 0.65)',
+                transition: 'all 0.2s',
+                '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.9)' },
+                '&.Mui-focused': { bgcolor: '#ffffff', boxShadow: '0 0 0 3px rgba(0, 81, 186, 0.12)' },
               },
             }}
           />
@@ -95,40 +96,45 @@ export default function SearchableCustomerDropdown({
                 display: 'flex !important',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                px: '16px !important',
-                py: '8px !important',
-                fontFamily: '"Kanit", sans-serif',
-                borderLeft: option.id === selectedCustomerId ? '3px solid #0051BA' : '3px solid transparent',
+                px: '20px !important',
+                py: '10px !important',
+                fontFamily: 'inherit',
+                borderLeft: option.id === selectedCustomerId ? '4px solid #0051BA' : '4px solid transparent',
+                transition: 'all 0.15s ease',
+                '&:hover': {
+                  bgcolor: 'rgba(0, 81, 186, 0.04) !important',
+                }
               }}
             >
               <Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                  <Typography sx={{ fontSize: '0.75rem', fontWeight: 700 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography sx={{ fontSize: '0.78rem', fontWeight: 800, color: 'text.primary' }}>
                     {option.name}
                   </Typography>
                   {showOverdueBadges && option.status === 'overdue' && (
                     <Chip
-                      label="ค้างชำระ"
+                      label="ค้างชำระค่างวด"
                       size="small"
                       color="error"
-                      sx={{ height: 18, fontSize: '0.6875rem', fontWeight: 800 }}
+                      sx={{ height: 18, fontSize: '0.625rem', fontWeight: 800, borderRadius: '4px' }}
                     />
                   )}
                 </Box>
-                <Typography sx={{ fontSize: '0.625rem', color: 'text.secondary', fontFamily: 'monospace' }}>
-                  เบอร์: {option.phone}
+                <Typography sx={{ fontSize: '0.6875rem', color: 'text.secondary', fontFamily: 'monospace', fontWeight: 600 }}>
+                  เบอร์โทรศัพท์: {option.phone}
                 </Typography>
               </Box>
-              <Box sx={{ display: 'flex', gap: 0.5, flexShrink: 0, ml: 2 }}>
+              <Box sx={{ display: 'flex', gap: 0.75, flexShrink: 0, ml: 2 }}>
                 <Chip
                   label={option.product}
                   size="small"
                   sx={{
                     height: 18,
-                    fontSize: '0.6875rem',
-                    fontWeight: 700,
-                    bgcolor: '#f1f5f9',
-                    color: '#475569',
+                    fontSize: '0.625rem',
+                    fontWeight: 800,
+                    borderRadius: '4px',
+                    bgcolor: 'rgba(148, 163, 184, 0.08)',
+                    color: 'text.primary',
                   }}
                 />
                 <Chip
@@ -136,10 +142,11 @@ export default function SearchableCustomerDropdown({
                   size="small"
                   sx={{
                     height: 18,
-                    fontSize: '0.6875rem',
-                    fontWeight: 700,
-                    bgcolor: '#eff6ff',
-                    color: '#1d4ed8',
+                    fontSize: '0.625rem',
+                    fontWeight: 800,
+                    borderRadius: '4px',
+                    bgcolor: 'rgba(0, 81, 186, 0.06)',
+                    color: 'primary.main',
                   }}
                 />
               </Box>
@@ -148,12 +155,14 @@ export default function SearchableCustomerDropdown({
         }}
         slotProps={{
           paper: {
-            elevation: 8,
             sx: {
-              borderRadius: 3,
-              mt: 0.5,
-              border: '1px solid',
-              borderColor: 'divider',
+              borderRadius: '16px',
+              mt: 0.75,
+              border: '1px solid rgba(226, 232, 240, 0.8)',
+              boxShadow: '0 12px 30px rgba(9, 18, 44, 0.12)',
+              bgcolor: 'rgba(255, 255, 255, 0.98)',
+              backdropFilter: 'blur(20px)',
+              overflow: 'hidden'
             },
           },
         }}

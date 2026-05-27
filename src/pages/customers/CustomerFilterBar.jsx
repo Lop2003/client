@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -5,16 +6,11 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import SearchIcon from '@mui/icons-material/Search';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import Typography from '@mui/material/Typography';
 
 /**
  * CustomerFilterBar — filter bar สำหรับหน้า Customers
- * @param {string}   searchQuery
- * @param {Function} setSearchQuery
- * @param {string}   selectedBranch
- * @param {Function} setSelectedBranch
- * @param {string}   selectedStatus
- * @param {Function} setSelectedStatus
- * @param {string[]} branches
  */
 export default function CustomerFilterBar({
   searchQuery,
@@ -27,61 +23,98 @@ export default function CustomerFilterBar({
 }) {
   return (
     <Paper
-      variant="outlined"
       sx={{
-        p: 2,
-        borderRadius: 3,
+        p: '16px 20px',
+        borderRadius: '20px',
         display: 'flex',
         flexWrap: 'wrap',
-        gap: 1.5,
+        gap: 2,
         alignItems: 'center',
-        borderColor: 'divider',
+        background: 'rgba(255, 255, 255, 0.55)',
+        backdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255, 255, 255, 0.6)',
+        boxShadow: '0 8px 30px rgba(0, 81, 186, 0.03)',
       }}
     >
-      {/* Search */}
+      {/* Search Field */}
       <TextField
         value={searchQuery}
         onChange={e => setSearchQuery(e.target.value)}
-        placeholder="ค้นหาชื่อลูกค้า, เบอร์โทร, สินค้าผ่อน..."
-        sx={{ flex: 1, minWidth: 200 }}
+        placeholder="ค้นหาชื่อลูกค้า, รหัสสัญญา, เบอร์โทรศัพท์, หรือสินค้าผ่อนชำระ..."
+        sx={{ 
+          flex: 2, 
+          minWidth: 280,
+          '& .MuiOutlinedInput-root': {
+            borderRadius: '12px',
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'primary.main',
+              borderWidth: '1.5px'
+            }
+          }
+        }}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <SearchIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
+              <SearchIcon sx={{ fontSize: 16, color: 'text.secondary', mr: 0.5 }} />
             </InputAdornment>
           ),
         }}
       />
 
-      {/* Branch filter */}
-      <FormControl size="small" sx={{ minWidth: 160 }}>
-        <Select
-          value={selectedBranch}
-          onChange={e => setSelectedBranch(e.target.value)}
-          displayEmpty
-          sx={{ borderRadius: 3, fontSize: '0.75rem' }}
-        >
-          <MenuItem value=""><em>สาขา: ทั้งหมด</em></MenuItem>
-          {branches.map(br => (
-            <MenuItem key={br} value={br}>{br}</MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', flex: { xs: 1, lg: 'none' }, minWidth: { xs: '100%', sm: 'auto' }, alignItems: 'center' }}>
+        <Box sx={{ display: { xs: 'none', lg: 'flex' }, alignItems: 'center', gap: 0.75, mr: 0.5 }}>
+          <FilterAltIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+          <Typography sx={{ fontSize: '0.75rem', fontWeight: 800, color: 'text.secondary' }}>
+            ตัวกรองเพิ่มเติม:
+          </Typography>
+        </Box>
 
-      {/* Status filter */}
-      <FormControl size="small" sx={{ minWidth: 180 }}>
-        <Select
-          value={selectedStatus}
-          onChange={e => setSelectedStatus(e.target.value)}
-          displayEmpty
-          sx={{ borderRadius: 3, fontSize: '0.75rem' }}
-        >
-          <MenuItem value=""><em>สถานะ: ทั้งหมด</em></MenuItem>
-          <MenuItem value="active">ปกติ (Active)</MenuItem>
-          <MenuItem value="overdue">ค้างชำระ (Overdue)</MenuItem>
-          <MenuItem value="completed">จบสัญญา (Completed)</MenuItem>
-        </Select>
-      </FormControl>
+        {/* Branch Filter dropdown */}
+        <FormControl size="small" sx={{ minWidth: 170, flex: 1 }}>
+          <Select
+            value={selectedBranch}
+            onChange={e => setSelectedBranch(e.target.value)}
+            displayEmpty
+            sx={{ 
+              borderRadius: '12px', 
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              '& .MuiSelect-select': { py: 1.25 }
+            }}
+          >
+            <MenuItem value="" sx={{ fontSize: '0.75rem', fontWeight: 700 }}>
+              <em>สาขา: ทุกพื้นที่สาขา</em>
+            </MenuItem>
+            {branches.map(br => (
+              <MenuItem key={br} value={br} sx={{ fontSize: '0.75rem', fontWeight: 600 }}>
+                สาขา: {br}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        {/* Status Filter dropdown */}
+        <FormControl size="small" sx={{ minWidth: 170, flex: 1 }}>
+          <Select
+            value={selectedStatus}
+            onChange={e => setSelectedStatus(e.target.value)}
+            displayEmpty
+            sx={{ 
+              borderRadius: '12px', 
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              '& .MuiSelect-select': { py: 1.25 }
+            }}
+          >
+            <MenuItem value="" sx={{ fontSize: '0.75rem', fontWeight: 700 }}>
+              <em>สถานะ: ทั้งหมดในระบบ</em>
+            </MenuItem>
+            <MenuItem value="active" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#10B981' }}>ปกติ (Active)</MenuItem>
+            <MenuItem value="overdue" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#EF4444' }}>ค้างชำระ (Overdue)</MenuItem>
+            <MenuItem value="completed" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748B' }}>จบสัญญา (Completed)</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
     </Paper>
   );
 }

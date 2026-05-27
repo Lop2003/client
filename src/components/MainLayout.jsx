@@ -13,6 +13,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import PersonIcon from '@mui/icons-material/Person';
 import Sidebar from './Sidebar';
 import { PATHS } from '../routes/paths';
+import bgImage from '../assets/bg.png';
 
 const PAGE_LABELS = {
   [PATHS.DASHBOARD]:    { breadcrumb: null,             label: 'dashboard' },
@@ -39,17 +40,38 @@ export default function MainLayout({ children }) {
         display: 'flex',
         height: '100vh',
         overflow: 'hidden',
-        bgcolor: '#e8edf5',
-        backgroundImage: 'radial-gradient(ellipse at 20% 10%, rgba(0,81,186,0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 90%, rgba(0,81,186,0.05) 0%, transparent 60%)',
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        position: 'relative',
       }}
     >
+      {/* Glassmorphism blur overlay to blend the background image softly */}
+      <Box
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          background: 'rgba(255, 255, 255, 0.12)',
+          backdropFilter: 'blur(8px)',
+          zIndex: 0,
+          pointerEvents: 'none',
+        }}
+      />
+      {/* Saturated Neon Accent Orbs to amplify colorfulness */}
+      <Box sx={{ position: 'absolute', top: '-10%', left: '15%', width: 450, height: 450,
+                  bgcolor: 'rgba(0, 81, 187, 0.15)', borderRadius: '50%', filter: 'blur(80px)', pointerEvents: 'none', zIndex: 0 }} />
+      <Box sx={{ position: 'absolute', bottom: '-5%', right: '10%', width: 450, height: 450,
+                  bgcolor: 'rgba(255, 219, 27, 0.14)', borderRadius: '50%', filter: 'blur(90px)', pointerEvents: 'none', zIndex: 0 }} />
+
       {/* ── Desktop Sidebar ─────────────────────────────────────── */}
       <Box
         sx={{
           display: { xs: 'none', md: 'flex' },
           width: sidebarWidth, flexShrink: 0,
-          transition: 'width 0.3s ease',
+          transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           pt: 1.5, pb: 1.5, pl: 1.5, pr: 0.75,
+          position: 'relative', zIndex: 1,
         }}
       >
         <Sidebar
@@ -69,6 +91,7 @@ export default function MainLayout({ children }) {
         sx={{
           display: { xs: 'block', md: 'none' },
           '& .MuiDrawer-paper': { width: MOBILE_DRAWER_WIDTH, bgcolor: 'transparent', border: 'none' },
+          zIndex: 1200,
         }}
       >
         <Sidebar
@@ -84,14 +107,16 @@ export default function MainLayout({ children }) {
         sx={{
           flex: 1, display: 'flex', flexDirection: 'column',
           overflow: 'hidden', p: { xs: 0, md: 1.5 }, pl: { md: 0.75 },
+          position: 'relative', zIndex: 1,
         }}
       >
         <Box
           sx={{
             flex: 1, display: 'flex', flexDirection: 'column',
-            bgcolor: 'background.paper',
-            borderRadius: { xs: 0, md: '20px' },
-            boxShadow: { md: '0 0 0 1px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.06)' },
+            bgcolor: '#ffffff',
+            borderRadius: { xs: 0, md: '24px' },
+            boxShadow: '0 20px 40px -15px rgba(9, 18, 44, 0.04), 0 1px 3px rgba(0, 0, 0, 0.01)',
+            border: '1px solid rgba(226, 232, 240, 0.8)',
             overflow: 'hidden',
           }}
         >
@@ -101,8 +126,8 @@ export default function MainLayout({ children }) {
             color="inherit"
             elevation={0}
             sx={{
-              borderBottom: '1px solid', borderColor: 'divider',
-              bgcolor: 'background.paper',
+              borderBottom: '1px solid rgba(226, 232, 240, 0.8)',
+              bgcolor: '#ffffff',
             }}
           >
             <Toolbar sx={{ minHeight: '56px !important', px: { xs: 1.5, md: 3 } }}>
@@ -112,8 +137,10 @@ export default function MainLayout({ children }) {
                 onClick={() => setMobileOpen(true)}
                 sx={{
                   display: { xs: 'flex', md: 'none' }, mr: 1,
-                  bgcolor: '#f8fafc', border: '1px solid #e2e8f0',
-                  borderRadius: 2, width: 36, height: 36,
+                  bgcolor: '#ffffff', border: '1px solid rgba(226,232,240,0.8)',
+                  borderRadius: 2.5, width: 36, height: 36,
+                  transition: 'all 0.2s',
+                  '&:hover': { bgcolor: '#f1f5f9' }
                 }}
               >
                 <MenuIcon sx={{ fontSize: 20, color: '#64748b' }} />
@@ -125,16 +152,16 @@ export default function MainLayout({ children }) {
                   label={pageInfo.label}
                   size="small"
                   sx={{
-                    bgcolor: '#EEF2FF', color: 'primary.main',
+                    bgcolor: 'rgba(0, 81, 186, 0.08)', color: 'primary.main',
                     fontWeight: 800, fontSize: '0.6875rem',
                     textTransform: 'uppercase', letterSpacing: '0.08em',
-                    height: 22, borderRadius: 1,
+                    height: 22, borderRadius: 1.5,
                   }}
                 />
                 {pageInfo.breadcrumb && (
                   <>
-                    <Typography sx={{ color: 'divider', fontSize: 14 }}>/</Typography>
-                    <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'text.secondary',
+                    <Typography sx={{ color: 'rgba(226, 232, 240, 0.8)', fontSize: 14 }}>/</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', fontWeight: 800, color: 'text.secondary',
                                       textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                       {pageInfo.breadcrumb}
                     </Typography>
@@ -145,10 +172,10 @@ export default function MainLayout({ children }) {
               {/* User info */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexShrink: 0 }}>
                 <Box sx={{ textAlign: 'right', display: { xs: 'none', sm: 'block' } }}>
-                  <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, lineHeight: 1 }}>
+                  <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, lineHeight: 1.2, color: 'text.primary' }}>
                     เจ้าหน้าที่บริการลูกค้า uFriend
                   </Typography>
-                  <Typography sx={{ fontSize: '0.6875rem', color: 'text.disabled', fontWeight: 600,
+                  <Typography sx={{ fontSize: '0.625rem', color: 'text.disabled', fontWeight: 700,
                                     textTransform: 'uppercase', letterSpacing: '0.08em', mt: 0.25 }}>
                     ฝ่ายบริหารประสบการณ์ลูกค้า
                   </Typography>
@@ -156,10 +183,15 @@ export default function MainLayout({ children }) {
                 <Tooltip title="โปรไฟล์ผู้ใช้">
                   <Avatar
                     sx={{
-                      width: 36, height: 36, bgcolor: 'primary.main',
+                      width: 38, height: 38, bgcolor: 'primary.main',
                       cursor: 'pointer', fontSize: 16,
-                      border: '2px solid', borderColor: 'primary.light',
-                      '&:hover': { bgcolor: 'primary.dark', transform: 'scale(1.05)', transition: 'all 0.2s' },
+                      border: '3px solid', borderColor: '#ffffff',
+                      boxShadow: '0 4px 10px rgba(0, 81, 186, 0.15)',
+                      transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                      '&:hover': {
+                        transform: 'scale(1.08) rotate(5deg)',
+                        boxShadow: '0 6px 15px rgba(0, 81, 186, 0.25)',
+                      },
                     }}
                   >
                     <PersonIcon sx={{ fontSize: 20 }} />

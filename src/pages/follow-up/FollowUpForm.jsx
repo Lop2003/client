@@ -21,9 +21,6 @@ const FOLLOW_UP_TYPES = [
   { value: 'promotion',      label: 'โทรแจ้งเสนอโปรโมชั่นพิเศษ (Promotion)' },
 ];
 
-/**
- * FollowUpForm — form card สำหรับบันทึกการติดตาม follow-up
- */
 export default function FollowUpForm({
   customers,
   customerId,
@@ -42,18 +39,23 @@ export default function FollowUpForm({
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', py: 2 }}>
       {/* Back button */}
-      <Box sx={{ width: '100%', maxWidth: 860, mb: 2, display: 'flex' }}>
+      <Box sx={{ width: '100%', maxWidth: 860, mb: 2.5, display: 'flex' }}>
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={onCancel}
           sx={{
             fontSize: '0.75rem',
-            fontWeight: 700,
+            fontWeight: 800,
             color: 'primary.main',
-            '&:hover': { bgcolor: '#EEF2FF' },
+            bgcolor: 'rgba(0, 81, 186, 0.04)',
+            borderRadius: '10px',
+            px: 2,
+            py: 0.75,
+            transition: 'all 0.2s',
+            '&:hover': { bgcolor: 'rgba(0, 81, 186, 0.08)', transform: 'translateX(-2px)' },
           }}
         >
-          กลับหน้ารายชื่อลูกค้า
+          กลับไปหน้ารายชื่อลูกค้า
         </Button>
       </Box>
 
@@ -63,39 +65,41 @@ export default function FollowUpForm({
         sx={{
           width: '100%',
           maxWidth: 860,
-          borderRadius: 6,
-          boxShadow: '8px 8px 30px rgba(163,177,198,0.25), -8px -8px 30px rgba(255,255,255,0.7)',
-          border: '1px solid rgba(255,255,255,0.6)',
-          background: '#fff',
+          borderRadius: '24px',
+          background: 'rgba(255, 255, 255, 0.75)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.5)',
+          boxShadow: '0 10px 30px -10px rgba(0, 81, 186, 0.05), 0 1px 3px rgba(0, 0, 0, 0.01)',
           overflow: 'hidden',
         }}
       >
-        <CardContent sx={{ p: { xs: 3, md: 5 }, display: 'flex', flexDirection: 'column', gap: 3.5 }}>
+        <CardContent sx={{ p: { xs: 3.5, md: 5 }, display: 'flex', flexDirection: 'column', gap: 4 }}>
 
           {/* Header */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box
               sx={{
-                width: 44, height: 44, borderRadius: 3,
-                bgcolor: '#EEF2FF', color: 'primary.main',
+                width: 44, height: 44, borderRadius: 2.5,
+                bgcolor: 'rgba(99, 102, 241, 0.08)', color: 'secondary.main',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                boxShadow: '0 4px 10px rgba(99, 102, 241, 0.1)'
               }}
             >
               <AccessTimeIcon sx={{ fontSize: 22 }} />
             </Box>
             <Box>
-              <Typography sx={{ fontSize: '0.9375rem', fontWeight: 800, color: '#111827' }}>
-                บันทึกการติดตามความคืบหน้าลูกค้า (Follow-Up Log)
+              <Typography sx={{ fontSize: '0.9375rem', fontWeight: 800, color: 'text.primary', letterSpacing: '-0.01em' }}>
+                บันทึกประวัติการโทรติดตามลูกค้า (Follow-Up)
               </Typography>
-              <Typography sx={{ fontSize: '0.75rem', color: '#9ca3af', mt: 0.5 }}>
-                บันทึกผลการเจรจาทวงถาม, ประสานงานคำติชม, หรือการชี้แจงเพื่อป้องกันปัญหาความเสี่ยงลูกค้าสัมพันธ์
+              <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary', fontWeight: 500, mt: 0.25 }}>
+                บันทึกผลการสื่อสารโทรประสานงานแจ้งค่างวด เจรจาหนี้สิน หรือชี้แจงแก้ไขปัญหาความพึงพอใจลูกค้า
               </Typography>
             </Box>
           </Box>
 
           {/* Error */}
           {error && (
-            <Alert severity="error" sx={{ borderRadius: 2.5, fontSize: '0.75rem' }}>
+            <Alert severity="error">
               {error}
             </Alert>
           )}
@@ -105,9 +109,8 @@ export default function FollowUpForm({
             <Alert
               severity="warning"
               icon={<NotificationsActiveIcon sx={{ fontSize: 18 }} />}
-              sx={{ borderRadius: 2.5, fontSize: '0.75rem' }}
             >
-              ลูกค้ารายนี้มียอดค้างชำระ (Overdue) แนะนำให้ใช้หัวข้อ "โทรแจ้งเตือนยอดชำระ" เพื่อบันทึกความคืบหน้า
+              <strong>ข้อควรระวัง:</strong> บัญชีผู้ใช้นี้อยู่ระหว่างค้างชำระค่างวด (Overdue Case) แนะนำให้ใช้หัวข้อการโทรติดตาม "โทรแจ้งเตือนค้างชำระเงิน"
             </Alert>
           )}
 
@@ -116,21 +119,21 @@ export default function FollowUpForm({
             customers={customers}
             selectedCustomerId={customerId}
             onChange={id => { setCustomerId(id); setError(''); }}
-            label="เลือกบัญชีลูกค้าสัญญา (ค้นหารายชื่อได้) *"
+            label="เลือกบัญชีคู่สัญญาลูกค้า (พิมพ์ค้นหารายชื่อได้) *"
             showOverdueBadges
           />
 
           {/* Type */}
           <FormControl fullWidth size="small">
-            <InputLabel sx={{ fontSize: '0.75rem' }}>ประเภทกิจกรรมการติดตาม *</InputLabel>
+            <InputLabel sx={{ fontSize: '0.75rem', fontWeight: 500 }}>ประเภทหัวข้อกิจกรรมโทรติดตามดูแล *</InputLabel>
             <Select
               value={type}
-              label="ประเภทกิจกรรมการติดตาม *"
+              label="ประเภทหัวข้อกิจกรรมโทรติดตามดูแล *"
               onChange={e => setType(e.target.value)}
-              sx={{ borderRadius: 3, fontSize: '0.75rem' }}
+              sx={{ borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600, '& .MuiSelect-select': { py: 1.25 } }}
             >
               {FOLLOW_UP_TYPES.map(opt => (
-                <MenuItem key={opt.value} value={opt.value} sx={{ fontSize: '0.75rem' }}>
+                <MenuItem key={opt.value} value={opt.value} sx={{ fontSize: '0.75rem', fontWeight: 600 }}>
                   {opt.label}
                 </MenuItem>
               ))}
@@ -139,18 +142,19 @@ export default function FollowUpForm({
 
           {/* Note */}
           <TextField
-            label="บันทึกรายละเอียดการประสานงานติดตาม *"
+            label="รายละเอียดผลลัพธ์การเจรจาหรือบันทึกข้อประสานงานติดตาม *"
             multiline
-            minRows={8}
+            minRows={7}
             value={note}
             onChange={e => { setNote(e.target.value); setError(''); }}
-            placeholder="ตัวอย่าง: โทรแจ้งยอดค้างงวดที่ 2 แล้ว ลูกค้าแจ้งเครื่องขัดข้องหน้าสาขา จะเข้ามาชำระยอดค้างสะสมพร้อมค่าบริการในวันพุธถัดไป..."
-            InputLabelProps={{ sx: { fontSize: '0.75rem' } }}
+            placeholder="ตัวอย่างเช่น: โทรติดต่อแจ้งยอดค้างชำระเรียบร้อยแล้ว ลูกค้าขอผ่อนผันจ่ายวันศุกร์นี้ผ่านช่องทาง Mobile Banking หน้าแอปพลิเคชันหลัก..."
+            InputLabelProps={{ sx: { fontSize: '0.75rem', fontWeight: 500 } }}
             sx={{
               '& .MuiOutlinedInput-root': {
-                borderRadius: 3,
+                borderRadius: '14px',
                 fontSize: '0.75rem',
                 alignItems: 'flex-start',
+                p: 2
               },
             }}
           />
@@ -159,27 +163,27 @@ export default function FollowUpForm({
           <Box
             sx={{
               display: 'flex', justifyContent: 'flex-end', gap: 1.5,
-              pt: 2.5, borderTop: '1px solid #f3f4f6', mt: 1,
+              pt: 3, borderTop: '1px solid rgba(226, 232, 240, 0.8)', mt: 1,
             }}
           >
             <Button
               variant="outlined"
               onClick={onCancel}
-              sx={{ borderRadius: 3, fontSize: '0.75rem', px: 3 }}
+              sx={{ borderRadius: '10px', fontSize: '0.75rem', px: 3.5, py: 1, fontWeight: 700 }}
             >
-              ยกเลิก
+              ยกเลิกรายการ
             </Button>
             <Button
               type="submit"
               variant="contained"
+              color="primary"
               disabled={isSubmitting}
               startIcon={<CheckIcon sx={{ fontSize: '14px !important' }} />}
               sx={{
-                borderRadius: 3, fontSize: '0.75rem', px: 3,
-                bgcolor: 'primary.main', '&:hover': { bgcolor: 'primary.dark' },
+                borderRadius: '10px', fontSize: '0.75rem', px: 3.5, py: 1,
               }}
             >
-              {isSubmitting ? 'กำลังบันทึก...' : 'บันทึกการติดตาม'}
+              {isSubmitting ? 'กำลังบันทึกข้อมูล...' : 'บันทึกการติดตาม'}
             </Button>
           </Box>
 

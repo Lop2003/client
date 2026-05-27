@@ -8,8 +8,6 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Chip from '@mui/material/Chip';
 import Rating from '@mui/material/Rating';
-import Divider from '@mui/material/Divider';
-import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import CloseIcon from '@mui/icons-material/Close';
 import SmartphoneIcon from '@mui/icons-material/Smartphone';
@@ -20,14 +18,13 @@ import TagIcon from '@mui/icons-material/Tag';
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import CheckIcon from '@mui/icons-material/Check';
+import WarningIcon from '@mui/icons-material/Warning';
 import { useNavigate } from 'react-router-dom';
 import { useCustomerDetail } from '../../hooks/useCustomerDetail';
-import { updateFollowUpStatus } from '../../services/followUpMutations';
-import { showToast } from '../../components/Toast';
-import { getCustomerStatus, getSentiment, getFeedbackCategory, getFollowUpType } from '../../utils/statusHelpers';
+import { getCustomerStatus, getSentiment, getFeedbackCategory } from '../../utils/statusHelpers';
 import { formatDate, formatContractId } from '../../utils/formatters';
 import { PATHS } from '../../routes/paths';
+import CustomerTimeline from './CustomerTimeline';
 
 // ─── Customer Info Card ──────────────────────────────────────────────────────
 function CustomerInfoCard({ customer }) {
@@ -35,56 +32,107 @@ function CustomerInfoCard({ customer }) {
   const isOverdue = customer.status === 'overdue';
 
   const infoItems = [
-    { icon: <SmartphoneIcon sx={{ fontSize: 16 }} />, label: 'สินค้าสัญญาผ่อน', value: customer.product },
-    { icon: <PhoneIcon sx={{ fontSize: 16 }} />, label: 'เบอร์ติดต่อสายด่วน', value: customer.phone },
-    { icon: <LocationOnIcon sx={{ fontSize: 16 }} />, label: 'สาขาที่ทำสัญญา', value: `สาขา${customer.branch}` },
-    { icon: <AccessTimeFilledIcon sx={{ fontSize: 16 }} />, label: 'ระยะเวลาผ่อน', value: `${customer.plan_months} เดือน` },
-    { icon: <CalendarTodayIcon sx={{ fontSize: 16 }} />, label: 'วันที่ทำสัญญา', value: formatDate(customer.created_at, 'long') },
-    { icon: <TagIcon sx={{ fontSize: 16 }} />, label: 'รหัสสัญญา', value: formatContractId(customer.id) },
+    { icon: <TagIcon sx={{ fontSize: 15 }} />, label: 'รหัสอ้างอิงสัญญา', value: formatContractId(customer.id), isCode: true },
+    { icon: <SmartphoneIcon sx={{ fontSize: 15 }} />, label: 'สินค้าผ่อนชำระ', value: customer.product },
+    { icon: <PhoneIcon sx={{ fontSize: 15 }} />, label: 'เบอร์ติดต่อลูกค้า', value: customer.phone, isCode: true },
+    { icon: <LocationOnIcon sx={{ fontSize: 15 }} />, label: 'สาขาที่ทำรายการ', value: `สาขา${customer.branch}` },
+    { icon: <AccessTimeFilledIcon sx={{ fontSize: 15 }} />, label: 'ระยะสัญญาทั้งหมด', value: `${customer.plan_months} เดือน` },
+    { icon: <CalendarTodayIcon sx={{ fontSize: 15 }} />, label: 'วันที่เริ่มทำสัญญา', value: formatDate(customer.created_at, 'long') },
   ];
 
   return (
-    <Box sx={{ bgcolor: '#fff', borderRadius: 3, border: '1px solid #e5e7eb', p: 3 }}>
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between',
-                  alignItems: 'flex-start', gap: 2, pb: 2.5, borderBottom: '1px solid #f3f4f6', mb: 2.5 }}>
+    <Box sx={{
+      bgcolor: '#ffffff',
+      borderRadius: '20px',
+      border: '1px solid rgba(226, 232, 240, 0.8)',
+      boxShadow: '0 8px 30px rgba(0, 81, 186, 0.02)',
+      p: 3
+    }}>
+      <Box sx={{
+        display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between',
+        alignItems: 'center', gap: 2, pb: 2.5, borderBottom: '1px solid rgba(226, 232, 240, 0.8)', mb: 2.5
+      }}>
         <Box>
-          <Typography sx={{ fontSize: '0.6875rem', fontWeight: 800, color: '#9ca3af',
-                            textTransform: 'uppercase', letterSpacing: '0.08em', mb: 0.5 }}>
-            ชื่อลูกค้าตามสัญญา
+          <Typography sx={{
+            fontSize: '0.625rem', fontWeight: 800, color: 'text.disabled',
+            textTransform: 'uppercase', letterSpacing: '0.1em', mb: 0.25
+          }}>
+            ข้อมูลบัญชีผู้ผ่อนชำระ
           </Typography>
-          <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: '#111827' }}>
+          <Typography sx={{ fontSize: '1.25rem', fontWeight: 800, color: 'text.primary', letterSpacing: '-0.01em' }}>
             {customer.name}
           </Typography>
         </Box>
         <Chip
-          label={s.shortLabel}
+          label={s.label}
           variant="outlined"
-          sx={{ ...s.chipSx, fontSize: '0.6875rem', fontWeight: 700, height: 28, borderRadius: 2 }}
+          sx={{
+            ...s.chipSx,
+            fontSize: '0.6875rem',
+            fontWeight: 800,
+            height: 26,
+            borderRadius: '6px',
+            borderWidth: '1.5px !important'
+          }}
         />
       </Box>
 
       {isOverdue && (
-        <Alert severity="error" sx={{ mb: 2.5, borderRadius: 2, fontSize: '0.6875rem' }}>
-          <Typography sx={{ fontWeight: 700, fontSize: '0.6875rem', mb: 0.5 }}>
-            ตรวจพบบัญชีมียอดค้างชำระ (Payment Overdue)
+        <Alert
+          severity="error"
+          icon={<WarningIcon sx={{ fontSize: 20 }} />}
+          sx={{ mb: 2.5 }}
+        >
+          <Typography sx={{ fontWeight: 800, fontSize: '0.75rem', mb: 0.5 }}>
+            ระบบตรวจพบบัญชีมียอดค้างชำระ (Payment Overdue Case)
           </Typography>
-          สัญญาของลูกค้ารายนี้มียอดค้างชำระ กรุณาโทรติดต่อแจ้งเตือนและแนะนำการชำระผ่านช่องทางด่วน
+          สัญญานี้มีจำนวนค้างชำระสะสม กรุณาดำเนินการโทรติดต่อประสานงาน แจ้งสิทธิพิเศษ หรือเจรจาประนอมหนี้ เพื่อช่วยแนะนำการจ่ายชำระโดยด่วนที่สุด
         </Alert>
       )}
 
+      {/* Info Tiles Grid */}
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', lg: 'repeat(3, 1fr)' }, gap: 2 }}>
         {infoItems.map((item, idx) => (
-          <Box key={idx} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
-            <Box sx={{ width: 32, height: 32, borderRadius: 1.5, bgcolor: '#f3f4f6', color: '#6b7280',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, mt: 0.25 }}>
+          <Box
+            key={idx}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1.75,
+              bgcolor: 'rgba(248, 250, 252, 0.55)',
+              border: '1px solid rgba(226, 232, 240, 0.6)',
+              p: 2,
+              borderRadius: '14px',
+              transition: 'all 0.2s',
+              '&:hover': {
+                bgcolor: 'rgba(248, 250, 252, 0.9)',
+                borderColor: 'rgba(0, 81, 186, 0.15)'
+              }
+            }}
+          >
+            <Box sx={{
+              width: 32, height: 32, borderRadius: 2,
+              bgcolor: '#ffffff', color: 'text.secondary',
+              border: '1px solid rgba(226, 232, 240, 0.8)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              boxShadow: '0 2px 5px rgba(0,0,0,0.02)'
+            }}>
               {item.icon}
             </Box>
             <Box>
-              <Typography sx={{ fontSize: '0.6875rem', fontWeight: 800, color: '#9ca3af',
-                                textTransform: 'uppercase', letterSpacing: '0.08em', mb: 0.25 }}>
+              <Typography sx={{
+                fontSize: '0.625rem', fontWeight: 800, color: 'text.disabled',
+                textTransform: 'uppercase', letterSpacing: '0.08em', mb: 0.25
+              }}>
                 {item.label}
               </Typography>
-              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 700, color: '#111827' }}>
+              <Typography sx={{
+                fontSize: '0.8125rem',
+                fontWeight: 700,
+                color: 'text.primary',
+                fontFamily: item.isCode ? 'monospace' : 'inherit',
+                letterSpacing: item.isCode ? '0.02em' : 'inherit'
+              }}>
                 {item.value}
               </Typography>
             </Box>
@@ -99,145 +147,105 @@ function CustomerInfoCard({ customer }) {
 function FeedbackHistory({ feedbacks }) {
   const sorted = [...feedbacks].sort((a, b) => b.rating - a.rating);
   return (
-    <Box sx={{ bgcolor: '#fff', borderRadius: 3, border: '1px solid #e5e7eb', p: 3 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2, pb: 2, borderBottom: '1px solid #f3f4f6' }}>
-        <Box sx={{ width: 32, height: 32, borderRadius: 2, bgcolor: '#EEF2FF', color: '#0051BA',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <Box sx={{
+      bgcolor: '#ffffff',
+      borderRadius: '20px',
+      border: '1px solid rgba(226, 232, 240, 0.8)',
+      boxShadow: '0 8px 30px rgba(0, 81, 186, 0.02)',
+      p: 3
+    }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3, pb: 2, borderBottom: '1px solid rgba(226, 232, 240, 0.8)' }}>
+        <Box sx={{
+          width: 34, height: 34, borderRadius: 2.5,
+          bgcolor: 'rgba(0, 81, 186, 0.06)',
+          color: 'primary.main',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 4px 10px rgba(0, 81, 186, 0.1)'
+        }}>
           <ChatBubbleOutlineIcon sx={{ fontSize: 18 }} />
         </Box>
-        <Typography sx={{ fontSize: '0.6875rem', fontWeight: 800, color: '#111827',
-                          textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-          ประวัติคำติชม (Feedback History)
-        </Typography>
+        <Box>
+          <Typography sx={{
+            fontSize: '0.75rem', fontWeight: 800, color: 'text.primary',
+            textTransform: 'uppercase', letterSpacing: '0.05em'
+          }}>
+            ประวัติการบันทึกคำติชม (Feedback History)
+          </Typography>
+          <Typography sx={{ fontSize: '0.6875rem', color: 'text.secondary', fontWeight: 500 }}>
+            ข้อมูลประเมินและระดับความพึงพอใจการให้บริการ
+          </Typography>
+        </Box>
       </Box>
 
       {sorted.length === 0 ? (
-        <Typography sx={{ fontSize: '0.75rem', color: 'text.disabled', textAlign: 'center', py: 4 }}>
-          ยังไม่มีประวัติคำติชมจากลูกค้าคนนี้
-        </Typography>
+        <Box sx={{ py: 6, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5 }}>
+          <Box sx={{
+            width: 48, height: 48, borderRadius: '50%',
+            bgcolor: 'rgba(148, 163, 184, 0.06)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: 'text.disabled'
+          }}>
+            <ChatBubbleOutlineIcon sx={{ fontSize: 24, opacity: 0.6 }} />
+          </Box>
+          <Typography sx={{ fontSize: '0.75rem', color: 'text.disabled', fontWeight: 600 }}>
+            ยังไม่มีประวัติคำประเมินติชมจากลูกค้าคนนี้
+          </Typography>
+        </Box>
       ) : (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, maxHeight: 320, overflowY: 'auto' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxHeight: 360, overflowY: 'auto', pr: 0.5 }}>
           {sorted.map(fb => {
             const sent = getSentiment(fb.sentiment);
             return (
-              <Box key={fb.id} sx={{ bgcolor: '#f8fafc', borderRadius: 2.5, p: 2,
-                                      border: '1px solid #f3f4f6' }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+              <Box
+                key={fb.id}
+                sx={{
+                  bgcolor: 'rgba(248, 250, 252, 0.75)',
+                  backdropFilter: 'blur(10px)',
+                  borderRadius: '16px',
+                  p: 2.25,
+                  border: '1px solid rgba(226, 232, 240, 0.6)',
+                  boxShadow: '0 4px 15px rgba(0, 81, 186, 0.01)',
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    bgcolor: 'rgba(248, 250, 252, 0.95)',
+                    transform: 'translateY(-1px)',
+                    borderColor: 'rgba(0, 81, 186, 0.2)'
+                  }
+                }}
+              >
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
                   <Rating value={fb.rating} readOnly size="small" sx={{ '& .MuiRating-iconFilled': { color: '#f59e0b' } }} />
-                  <Typography sx={{ fontSize: '0.625rem', color: '#9ca3af', fontWeight: 700 }}>
+                  <Typography sx={{ fontSize: '0.6875rem', color: 'text.disabled', fontWeight: 700, fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
                     {formatDate(fb.created_at)}
                   </Typography>
                 </Box>
-                <Typography sx={{ fontSize: '0.75rem', color: '#374151', fontWeight: 600,
-                                  fontStyle: 'italic', lineHeight: 1.6, mb: 1 }}>
+                <Typography sx={{
+                  fontSize: '0.75rem', color: 'text.primary', fontWeight: 600,
+                  fontStyle: 'italic', lineHeight: 1.6, mb: 2,
+                  bgcolor: '#ffffff', p: 1.5, borderRadius: '10px',
+                  border: '1px solid rgba(226, 232, 240, 0.6)'
+                }}>
                   "{fb.comment}"
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 0.75 }}>
-                  <Chip label={`หมวด: ${getFeedbackCategory(fb.category)}`} size="small"
-                    sx={{ height: 20, fontSize: '0.6875rem', fontWeight: 700,
-                          bgcolor: '#EEF2FF', color: '#0051BA' }} />
-                  <Chip label={`อารมณ์: ${sent.label}`} size="small"
-                    sx={{ height: 20, fontSize: '0.6875rem', fontWeight: 700, ...sent.sx }} />
-                </Box>
-              </Box>
-            );
-          })}
-        </Box>
-      )}
-    </Box>
-  );
-}
-
-// ─── Follow-Up Log ───────────────────────────────────────────────────────────
-function FollowUpLog({ followUps, customerId, onRefresh }) {
-  return (
-    <Box sx={{ bgcolor: '#fff', borderRadius: 3, border: '1px solid #e5e7eb', p: 3 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2, pb: 2, borderBottom: '1px solid #f3f4f6' }}>
-        <Box sx={{ width: 32, height: 32, borderRadius: 2, bgcolor: '#EEF2FF', color: '#0051BA',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <AssignmentIcon sx={{ fontSize: 18 }} />
-        </Box>
-        <Typography sx={{ fontSize: '0.6875rem', fontWeight: 800, color: '#111827',
-                          textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-          บันทึกการติดตาม (Follow-Up Logs)
-        </Typography>
-      </Box>
-
-      {followUps.length === 0 ? (
-        <Typography sx={{ fontSize: '0.75rem', color: 'text.disabled', textAlign: 'center', py: 4 }}>
-          ยังไม่มีบันทึกการโทรหรือติดตามลูกค้า
-        </Typography>
-      ) : (
-        <Box sx={{ position: 'relative', maxHeight: 320, overflowY: 'auto', pl: 1 }}>
-          {followUps.map((fu, idx) => {
-            const t = getFollowUpType(fu.type);
-            return (
-              <Box key={fu.id} sx={{ position: 'relative', pl: 3.5, pb: 2.5 }}>
-                {/* Vertical line */}
-                {idx < followUps.length - 1 && (
-                  <Box sx={{ position: 'absolute', left: 7, top: 20, bottom: -8,
-                              width: 2, bgcolor: '#e5e7eb' }} />
-                )}
-                {/* Node circle */}
-                <Box sx={{ position: 'absolute', left: 0, top: 6, width: 16, height: 16,
-                            borderRadius: '50%', bgcolor: t.color, border: '2px solid #fff',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            boxShadow: 1, zIndex: 1 }}>
-                  <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#fff' }} />
-                </Box>
-
-                <Box sx={{ bgcolor: '#f8fafc', borderRadius: 2.5, p: 2, border: '1px solid #f3f4f6' }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#111827' }}>
-                      {t.label}
-                    </Typography>
-                    <Typography sx={{ fontSize: '0.625rem', color: '#9ca3af', fontWeight: 700 }}>
-                      {formatDate(fu.created_at)}
-                    </Typography>
-                  </Box>
-                  <Typography sx={{ fontSize: '0.6875rem', color: '#374151', fontWeight: 600,
-                                    lineHeight: 1.6, mb: 1.5, bgcolor: '#fff', p: 1.25,
-                                    borderRadius: 2, border: '1px solid #f3f4f6' }}>
-                    {fu.note}
-                  </Typography>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography sx={{ fontSize: '0.6875rem', color: '#9ca3af', fontWeight: 700 }}>
-                      โดย: ฝ่ายบริการลูกค้า uFriend
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 0.75, alignItems: 'center' }}>
-                      {fu.status === 'pending' && (
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          startIcon={<CheckIcon sx={{ fontSize: '10px !important' }} />}
-                          onClick={async () => {
-                            try {
-                              await updateFollowUpStatus(fu.id, 'done');
-                              showToast('success', 'อัพเดทสถานะเรียบร้อยแล้ว');
-                              onRefresh();
-                            } catch {
-                              showToast('error', 'ไม่สามารถอัพเดทสถานะได้');
-                            }
-                          }}
-                          sx={{ fontSize: '0.6875rem', height: 22, px: 1, borderRadius: 1.5,
-                                borderColor: 'primary.light', color: 'primary.main',
-                                '&:hover': { bgcolor: 'primary.main', color: '#fff' } }}
-                        >
-                          เสร็จแล้ว
-                        </Button>
-                      )}
-                      <Chip
-                        label={fu.status === 'done' ? 'สำเร็จแล้ว' : 'รอดำเนินการ'}
-                        size="small"
-                        sx={{
-                          height: 20, fontSize: '0.6875rem', fontWeight: 700, borderRadius: 1,
-                          ...(fu.status === 'done'
-                            ? { bgcolor: '#dcfce7', color: '#057A55' }
-                            : { bgcolor: '#fee2e2', color: '#C81E1E' }),
-                        }}
-                      />
-                    </Box>
-                  </Box>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Chip
+                    label={`หมวดหมู่: ${getFeedbackCategory(fb.category)}`}
+                    size="small"
+                    sx={{
+                      height: 20, fontSize: '0.625rem', fontWeight: 800, borderRadius: '6px',
+                      bgcolor: 'rgba(0, 81, 186, 0.06)', color: 'primary.main',
+                      border: '1px solid rgba(0, 81, 186, 0.12)'
+                    }}
+                  />
+                  <Chip
+                    label={`อารมณ์: ${sent.label}`}
+                    size="small"
+                    sx={{
+                      height: 20, fontSize: '0.625rem', fontWeight: 800, borderRadius: '6px',
+                      ...sent.sx,
+                      border: '1px solid currentColor'
+                    }}
+                  />
                 </Box>
               </Box>
             );
@@ -271,71 +279,107 @@ export default function CustomerDetailModal({ selectedCustomerId, isOpen, onClos
       onClose={handleClose}
       maxWidth="lg"
       fullWidth
-      PaperProps={{ sx: { borderRadius: 4, maxHeight: '92vh' } }}
+      PaperProps={{
+        sx: {
+          borderRadius: '28px',
+          maxHeight: '92vh',
+        }
+      }}
     >
       {/* Dialog Header */}
-      <DialogTitle sx={{ px: 3, py: 1.75, borderBottom: '1px solid #f3f4f6', display: 'flex',
-                          alignItems: 'center', justifyContent: 'space-between' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Chip label="CX Insight" size="small"
-            sx={{ bgcolor: '#EEF2FF', color: 'primary.main', fontWeight: 800,
-                  fontSize: '0.6875rem', textTransform: 'uppercase', height: 22, borderRadius: 1 }} />
-          <Typography sx={{ color: '#cbd5e1', mx: 0.5 }}>/</Typography>
-          <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'text.secondary' }}>
-            ข้อมูลประวัติลูกค้าสัมพันธ์เชิงลึก
+      <DialogTitle sx={{
+        px: 3.5, py: 2.25,
+        borderBottom: '1px solid rgba(226, 232, 240, 0.8)',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        bgcolor: 'rgba(255,255,255,0.4)', backdropFilter: 'blur(10px)'
+      }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+          <Chip
+            label="CX Customer Portal"
+            size="small"
+            sx={{
+              bgcolor: 'rgba(99, 102, 241, 0.08)', color: 'secondary.main', fontWeight: 800,
+              fontSize: '0.6875rem', textTransform: 'uppercase', height: 22, borderRadius: '6px',
+              border: '1.5px solid rgba(99, 102, 241, 0.15)'
+            }}
+          />
+          <Typography sx={{ color: 'rgba(226, 232, 240, 0.8)', mx: 0.5 }}>/</Typography>
+          <Typography sx={{ fontSize: '0.75rem', fontWeight: 800, color: 'text.secondary', letterSpacing: '0.02em' }}>
+            ประวัติการประสานงานและดูแลลูกค้าเชิงลึก
           </Typography>
         </Box>
-        <IconButton size="small" onClick={handleClose}
-          sx={{ bgcolor: '#f1f5f9', '&:hover': { bgcolor: '#e2e8f0' }, borderRadius: 2 }}>
-          <CloseIcon sx={{ fontSize: 16 }} />
+        <IconButton
+          size="small"
+          onClick={handleClose}
+          sx={{
+            bgcolor: 'rgba(241, 245, 249, 0.8)',
+            border: '1px solid rgba(226, 232, 240, 0.8)',
+            '&:hover': { bgcolor: '#f1f5f9', transform: 'scale(1.05)' },
+            borderRadius: '8px',
+            width: 28, height: 28,
+            transition: 'all 0.2s'
+          }}
+        >
+          <CloseIcon sx={{ fontSize: 14, color: '#64748b' }} />
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 3, bgcolor: '#f8fafc', overflowY: 'auto' }}>
+      <DialogContent sx={{ p: 3.5, bgcolor: '#F3F7FC', overflowY: 'auto' }}>
         {detailLoading && (
-          <Alert severity="info" icon={<CircularProgress size={16} />}
-            sx={{ mb: 2, borderRadius: 2, fontSize: '0.75rem' }}>
-            กำลังโหลดข้อมูลเชิงลึกจาก API...
+          <Alert
+            severity="info"
+            icon={<WarningIcon sx={{ fontSize: 20 }} />}
+            sx={{ mb: 2.5 }}
+          >
+            กำลังเชื่อมต่อและประมวลผลข้อมูลบัญชีผู้ใช้เชิงลึกจาก Server...
           </Alert>
         )}
 
         {/* Action buttons */}
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, justifyContent: 'flex-end', mb: 2.5 }}>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, justifyContent: 'flex-end', mb: 3 }}>
           <Button
             variant="contained"
+            color="secondary"
             size="small"
             onClick={handleAddFeedback}
             startIcon={<ChatBubbleOutlineIcon sx={{ fontSize: '14px !important' }} />}
-            sx={{ bgcolor: '#6366f1', '&:hover': { bgcolor: '#4f46e5' }, borderRadius: 2.5,
-                  fontSize: '0.6875rem', px: 2 }}
+            sx={{
+              borderRadius: '10px',
+              fontSize: '0.75rem', px: 2.5, py: 1,
+            }}
           >
-            บันทึกคำติชม
+            บันทึกการส่งคำติชม
           </Button>
           <Button
             variant="contained"
+            color="primary"
             size="small"
             onClick={handleAddFollowUp}
             startIcon={<AssignmentIcon sx={{ fontSize: '14px !important' }} />}
-            sx={{ bgcolor: 'primary.main', '&:hover': { bgcolor: 'primary.dark' }, borderRadius: 2.5,
-                  fontSize: '0.6875rem', px: 2 }}
+            sx={{
+              borderRadius: '10px',
+              fontSize: '0.75rem', px: 2.5, py: 1,
+            }}
           >
-            บันทึกการติดตาม
+            บันทึกการติดตามลูกค้า
           </Button>
         </Box>
 
         {!customer ? (
-          <Typography sx={{ textAlign: 'center', color: 'text.disabled', py: 8, fontSize: '0.875rem' }}>
-            ไม่พบข้อมูลลูกค้า
-          </Typography>
+          <Box sx={{ py: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+            <Typography sx={{ color: 'text.disabled', fontSize: '0.875rem', fontWeight: 600 }}>
+              ขออภัย ไม่พบเอกสารสัญญารายการลูกค้านี้ในระบบ
+            </Typography>
+          </Box>
         ) : (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3.5 }}>
             {/* Customer Info */}
             <CustomerInfoCard customer={customer} />
 
-            {/* Feedback + FollowUp Grid */}
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' }, gap: 2.5 }}>
+            {/* Feedback & Timeline Split Grid */}
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' }, gap: 3.5 }}>
               <FeedbackHistory feedbacks={customer?.feedbacks ?? []} />
-              <FollowUpLog
+              <CustomerTimeline
                 followUps={customer?.follow_ups ?? []}
                 customerId={selectedCustomerId}
                 onRefresh={loadDetail}

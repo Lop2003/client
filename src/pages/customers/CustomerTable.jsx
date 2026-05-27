@@ -12,6 +12,7 @@ import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import InfoIcon from '@mui/icons-material/Info';
 import { getCustomerStatus } from '../../utils/statusHelpers';
 import { formatContractId } from '../../utils/formatters';
 
@@ -19,10 +20,10 @@ const HEAD_CELLS = [
   { id: 'created_at', label: 'รหัสสัญญา', sortable: true },
   { id: 'name',       label: 'ชื่อลูกค้าตามสัญญา', sortable: true },
   { id: 'phone',      label: 'เบอร์โทรศัพท์', sortable: false },
-  { id: 'product',    label: 'สินค้าผ่อน', sortable: true },
-  { id: 'branch',     label: 'สาขา', sortable: false },
-  { id: 'plan_months', label: 'ระยะเวลา', sortable: true },
-  { id: 'status',     label: 'สถานะ', sortable: true },
+  { id: 'product',    label: 'สินค้าผ่อนชำระ', sortable: true },
+  { id: 'branch',     label: 'พื้นที่สาขา', sortable: false },
+  { id: 'plan_months', label: 'ระยะเวลาสัญญา', sortable: true },
+  { id: 'status',     label: 'สถานะค่างวด', sortable: true },
   { id: 'actions',    label: 'การจัดการ', sortable: false, align: 'right' },
 ];
 
@@ -55,9 +56,12 @@ export default function CustomerTable({
   return (
     <Paper
       sx={{
-        borderRadius: 4, overflow: 'hidden',
-        boxShadow: '6px 6px 15px rgba(163,177,198,0.3),-6px -6px 15px rgba(255,255,255,0.8)',
-        border: '1px solid rgba(255,255,255,0.6)',
+        borderRadius: '24px',
+        overflow: 'hidden',
+        background: 'rgba(255, 255, 255, 0.75)',
+        backdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255, 255, 255, 0.5)',
+        boxShadow: '0 10px 30px -10px rgba(0, 81, 186, 0.05), 0 1px 3px rgba(0, 0, 0, 0.01)',
       }}
     >
       <TableContainer>
@@ -69,6 +73,7 @@ export default function CustomerTable({
                   key={cell.id}
                   align={cell.align ?? 'left'}
                   sortDirection={sortBy === cell.id ? sortOrder : false}
+                  sx={{ py: 2 }}
                 >
                   {cell.sortable ? (
                     <TableSortLabel
@@ -76,7 +81,7 @@ export default function CustomerTable({
                       direction={sortBy === cell.id ? sortOrder : 'asc'}
                       onClick={() => handleSort(cell.id)}
                       sx={{
-                        fontSize: '0.6875rem', fontWeight: 800, color: '#9ca3af',
+                        fontSize: '0.6875rem', fontWeight: 800, color: 'text.secondary',
                         textTransform: 'uppercase', letterSpacing: '0.08em',
                         whiteSpace: 'nowrap',
                         '&.Mui-active': { color: 'primary.main' },
@@ -86,8 +91,10 @@ export default function CustomerTable({
                       {cell.label}
                     </TableSortLabel>
                   ) : (
-                    <Typography sx={{ fontSize: '0.6875rem', fontWeight: 800, color: '#9ca3af',
-                                      textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>
+                    <Typography sx={{ 
+                      fontSize: '0.6875rem', fontWeight: 800, color: 'text.secondary',
+                      textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap' 
+                    }}>
                       {cell.label}
                     </Typography>
                   )}
@@ -99,10 +106,13 @@ export default function CustomerTable({
           <TableBody>
             {customers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} align="center" sx={{ py: 6 }}>
-                  <Typography sx={{ fontSize: '0.75rem', color: 'text.disabled' }}>
-                    ไม่พบรายชื่อบัญชีลูกค้าตามคำค้นหาและเงื่อนไขตัวกรอง
-                  </Typography>
+                <TableCell colSpan={8} align="center" sx={{ py: 10 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5 }}>
+                    <InfoIcon sx={{ fontSize: 32, color: 'text.disabled', opacity: 0.6 }} />
+                    <Typography sx={{ fontSize: '0.75rem', color: 'text.disabled', fontWeight: 700 }}>
+                      ไม่พบบัญชีสัญญาของลูกค้าตามเงื่อนไขการค้นหา
+                    </Typography>
+                  </Box>
                 </TableCell>
               </TableRow>
             ) : (
@@ -116,58 +126,86 @@ export default function CustomerTable({
                     onClick={() => onRowClick && onRowClick(c.id)}
                     sx={{
                       cursor: 'pointer',
-                      bgcolor: isOverdue ? '#FFF0F2' : 'inherit',
-                      borderLeft: '3px solid',
-                      borderLeftColor: isOverdue ? '#C81E1E' : 'transparent',
-                      transition: 'all 0.2s',
+                      bgcolor: isOverdue ? 'rgba(254, 226, 226, 0.25)' : 'inherit',
+                      borderLeft: '4px solid',
+                      borderLeftColor: isOverdue ? '#EF4444' : 'transparent',
+                      transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                       '&:hover': {
-                        bgcolor: isOverdue ? '#FFE3E7 !important' : '#f8fafc !important',
+                        bgcolor: isOverdue ? 'rgba(254, 226, 226, 0.45) !important' : 'rgba(0, 81, 186, 0.02) !important',
                       },
                     }}
                   >
                     <TableCell>
-                      <Typography sx={{ fontSize: '0.75rem', color: '#9ca3af', fontFamily: 'monospace' }}>
+                      <Typography sx={{ 
+                        fontSize: '0.75rem', 
+                        color: 'text.secondary', 
+                        fontFamily: 'monospace',
+                        fontWeight: 600,
+                        letterSpacing: '0.02em'
+                      }}>
                         {formatContractId(c.id)}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography sx={{ fontSize: '0.8125rem', fontWeight: 700, color: '#111827', whiteSpace: 'nowrap' }}>
+                      <Typography sx={{ fontSize: '0.8125rem', fontWeight: 800, color: 'text.primary', whiteSpace: 'nowrap' }}>
                         {c.name}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography sx={{ fontSize: '0.75rem', color: '#6b7280', fontFamily: 'monospace' }}>
+                      <Typography sx={{ 
+                        fontSize: '0.75rem', 
+                        color: 'text.secondary', 
+                        fontFamily: 'monospace',
+                        fontWeight: 600
+                      }}>
                         {c.phone}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#374151' }}>
+                      <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'text.primary' }}>
                         {c.product}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>{c.branch}</Typography>
+                      <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary', fontWeight: 600 }}>{c.branch}</Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography sx={{ fontSize: '0.75rem', color: '#9ca3af' }}>
-                        {c.plan_months} เดือน
+                      <Typography sx={{ fontSize: '0.75rem', color: 'text.disabled', fontWeight: 700, fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+                        {c.plan_months} <Box component="span" sx={{ fontSize: '0.6875rem', fontWeight: 600 }}>เดือน</Box>
                       </Typography>
                     </TableCell>
                     <TableCell>
                       <Chip
                         label={s.label}
                         size="small"
-                        variant="outlined"
-                        sx={{ ...s.chipSx, fontSize: '0.625rem', fontWeight: 700, height: 20, borderRadius: 1 }}
+                        sx={{ 
+                          fontSize: '0.625rem', 
+                          fontWeight: 800, 
+                          height: 20, 
+                          borderRadius: '6px',
+                          ...s.chipSx,
+                          border: '1.5px solid currentColor'
+                        }}
                       />
                     </TableCell>
                     <TableCell align="right">
                       <Button
-                        size="small" variant="text" endIcon={<ChevronRightIcon sx={{ fontSize: '14px !important' }} />}
-                        sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'primary.main',
-                              '&:hover': { bgcolor: '#EEF2FF' } }}
+                        size="small" 
+                        variant="text" 
+                        endIcon={<ChevronRightIcon sx={{ fontSize: '14px !important' }} />}
+                        sx={{ 
+                          fontSize: '0.6875rem', 
+                          fontWeight: 800, 
+                          color: 'primary.main',
+                          py: 0.5,
+                          borderRadius: '8px',
+                          '&:hover': { 
+                            bgcolor: 'rgba(0, 81, 186, 0.06)',
+                            transform: 'translateX(2px)'
+                          } 
+                        }}
                       >
-                        ดูประวัติ
+                        เปิดดูประวัติ
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -188,12 +226,12 @@ export default function CustomerTable({
           onLimitChange && onLimitChange(parseInt(e.target.value, 10));
         }}
         rowsPerPageOptions={[5, 10, 20, 50]}
-        labelRowsPerPage="แสดงหน้าละ:"
-        labelDisplayedRows={({ from, to, count }) => `${from}–${to} จาก ${count} รายการ`}
+        labelRowsPerPage="แสดงรายการต่อหน้า:"
+        labelDisplayedRows={({ from, to, count }) => `${from}–${to} จากทั้งหมด ${count} รายการ`}
         sx={{
-          borderTop: '1px solid #f3f4f6',
-          bgcolor: 'rgba(248,250,252,0.75)',
-          '& .MuiTablePagination-select': { fontSize: '0.75rem' },
+          borderTop: '1px solid rgba(226, 232, 240, 0.8)',
+          bgcolor: 'rgba(248, 250, 252, 0.4)',
+          '& .MuiTablePagination-select': { fontSize: '0.75rem', fontWeight: 700 },
         }}
       />
     </Paper>

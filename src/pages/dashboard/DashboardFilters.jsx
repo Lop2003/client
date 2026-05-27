@@ -6,12 +6,6 @@ import FormControl from '@mui/material/FormControl';
 import Typography from '@mui/material/Typography';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 
-/**
- * DashboardFilters — filter bar สำหรับเลือกสาขาในหน้า Dashboard
- * @param {string}   selectedBranch
- * @param {Function} setSelectedBranch
- * @param {string[]} branches          - รายชื่อสาขาทั้งหมด
- */
 export default function DashboardFilters({
   selectedBranch,
   setSelectedBranch,
@@ -19,43 +13,52 @@ export default function DashboardFilters({
 }) {
   return (
     <Paper
-      variant="outlined"
       sx={{
-        p: 2,
-        borderRadius: 3,
+        p: '14px 20px',
+        borderRadius: '16px',
         display: 'flex',
         flexWrap: 'wrap',
         gap: 2,
         alignItems: 'center',
-        borderColor: 'divider',
-        background: 'linear-gradient(to right, #ffffff, #fcfcfd)',
+        background: 'rgba(255, 255, 255, 0.55)',
+        backdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255, 255, 255, 0.6)',
+        boxShadow: '0 8px 30px rgba(0, 81, 186, 0.03)',
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <FilterAltIcon sx={{ fontSize: 18, color: 'primary.main' }} />
-        <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'text.secondary' }}>
-          เลือกดูข้อมูลรายสาขา:
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+        <Box sx={{
+          width: 28, height: 28, borderRadius: 2,
+          bgcolor: 'rgba(0, 81, 186, 0.06)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: 'primary.main',
+        }}>
+          <FilterAltIcon sx={{ fontSize: 16 }} />
+        </Box>
+        <Typography sx={{ fontSize: '0.75rem', fontWeight: 800, color: 'text.secondary', letterSpacing: '0.01em' }}>
+          เลือกวิเคราะห์รายพื้นที่สาขา:
         </Typography>
       </Box>
 
-      {/* Branch filter */}
-      <FormControl size="small" sx={{ minWidth: 200 }}>
+      {/* Branch filter dropdown */}
+      <FormControl size="small" sx={{ minWidth: 220 }}>
         <Select
           value={selectedBranch}
           onChange={e => setSelectedBranch(e.target.value)}
           displayEmpty
           sx={{ 
-            borderRadius: 3, 
+            borderRadius: '12px', 
             fontSize: '0.75rem',
-            fontWeight: 600,
-            '& .MuiSelect-select': { py: 1 }
+            fontWeight: 700,
+            color: 'text.primary',
+            '& .MuiSelect-select': { py: 1.25, px: 2 }
           }}
         >
-          <MenuItem value="" sx={{ fontSize: '0.75rem', fontWeight: 600 }}>
-            <em>สาขา: ทั้งหมดทุกสาขา</em>
+          <MenuItem value="" sx={{ fontSize: '0.75rem', fontWeight: 700 }}>
+            <em>สาขา: ทุกพื้นที่สาขา (All)</em>
           </MenuItem>
           {branches.map(br => (
-            <MenuItem key={br} value={br} sx={{ fontSize: '0.75rem' }}>
+            <MenuItem key={br} value={br} sx={{ fontSize: '0.75rem', fontWeight: 600 }}>
               สาขา: {br}
             </MenuItem>
           ))}

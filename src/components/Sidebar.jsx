@@ -17,6 +17,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import CloseIcon from '@mui/icons-material/Close';
 import PersonIcon from '@mui/icons-material/Person';
 import { PATHS } from '../routes/paths';
+import brandIcon from '../assets/Icon.png';
 
 const NAV_ITEMS = [
   { label: 'แดชบอร์ด',        path: PATHS.DASHBOARD,    icon: <DashboardIcon fontSize="small" /> },
@@ -25,7 +26,7 @@ const NAV_ITEMS = [
   { label: 'บันทึกการติดตาม', path: PATHS.FOLLOW_UP,    icon: <AccessTimeIcon fontSize="small" /> },
 ];
 
-const SIDEBAR_GRADIENT = 'linear-gradient(180deg, #0B0080 0%, #0D009C 40%, #0051BA 100%)';
+const SIDEBAR_GRADIENT = 'linear-gradient(160deg, #003380 0%, #0051bb 60%, #1E40AF 100%)';
 const COLLAPSED_WIDTH = 68;
 const EXPANDED_WIDTH = 240;
 
@@ -48,19 +49,19 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, isMobileOpen, o
         flexDirection: 'column',
         justifyContent: 'space-between',
         overflow: 'hidden',
-        transition: 'width 0.3s ease',
+        transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         position: 'relative',
-        borderRadius: isMobileOpen ? 0 : '20px',
-        boxShadow: '8px 8px 24px rgba(0,29,66,0.15)',
-        border: '1px solid rgba(255,255,255,0.1)',
+        borderRadius: isMobileOpen ? 0 : '24px',
+        boxShadow: '0 20px 40px rgba(9, 18, 44, 0.25)',
+        border: '1px solid rgba(255,255,255,0.06)',
         flexShrink: 0,
       }}
     >
-      {/* Decorative blur circles */}
-      <Box sx={{ position: 'absolute', top: -40, left: -40, width: 120, height: 120,
-                  bgcolor: 'rgba(255,255,255,0.06)', borderRadius: '50%', filter: 'blur(30px)', pointerEvents: 'none' }} />
-      <Box sx={{ position: 'absolute', bottom: 40, right: 0, width: 96, height: 96,
-                  bgcolor: 'rgba(135,206,250,0.06)', borderRadius: '50%', filter: 'blur(20px)', pointerEvents: 'none' }} />
+      {/* Decorative blurred cosmic spots */}
+      <Box sx={{ position: 'absolute', top: -30, left: -30, width: 140, height: 140,
+                  bgcolor: 'rgba(99, 102, 241, 0.12)', borderRadius: '50%', filter: 'blur(30px)', pointerEvents: 'none' }} />
+      <Box sx={{ position: 'absolute', bottom: '20%', right: -20, width: 120, height: 120,
+                  bgcolor: 'rgba(56, 189, 248, 0.08)', borderRadius: '50%', filter: 'blur(25px)', pointerEvents: 'none' }} />
 
       <Box sx={{ position: 'relative', zIndex: 1 }}>
         {/* Header: Logo + Brand + Toggle */}
@@ -69,7 +70,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, isMobileOpen, o
             display: 'flex', alignItems: 'center',
             justifyContent: isCollapsed ? 'center' : 'space-between',
             px: isCollapsed ? 0 : 2.5, py: 0,
-            height: 64, borderBottom: '1px solid rgba(255,255,255,0.08)',
+            height: 68, borderBottom: '1px solid rgba(255,255,255,0.06)',
             flexShrink: 0,
           }}
         >
@@ -77,19 +78,40 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, isMobileOpen, o
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, overflow: 'hidden' }}>
               <Box
                 sx={{
-                  width: 32, height: 32, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.15)',
-                  border: '1px solid rgba(255,255,255,0.2)', display: 'flex',
-                  alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                  width: 34,
+                  height: 34,
+                  borderRadius: 2.5,
+                  bgcolor: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  boxShadow: 'inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 4px 10px rgba(0, 0, 0, 0.15)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'rotate(-5deg) scale(1.05)',
+                  }
                 }}
               >
-                <Typography sx={{ fontSize: 16, fontWeight: 900, color: '#FFDA1A', lineHeight: 1 }}>U</Typography>
+                <Box
+                  component="img"
+                  src={brandIcon}
+                  alt="uFriend"
+                  sx={{
+                    width: 22,
+                    height: 22,
+                    objectFit: 'contain',
+                    filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.15))'
+                  }}
+                />
               </Box>
               <Box sx={{ overflow: 'hidden' }}>
-                <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: '#fff', lineHeight: 1, whiteSpace: 'nowrap' }}>
-                  <Box component="span" sx={{ color: '#FFDA1A' }}>U</Box>friend CX
+                <Typography sx={{ fontSize: '0.875rem', fontWeight: 800, color: '#ffffff', lineHeight: 1, whiteSpace: 'nowrap', letterSpacing: '0.01em' }}>
+                  <Box component="span" sx={{ color: '#ffdb1b' }}>U</Box>friend CX
                 </Typography>
-                <Typography sx={{ fontSize: '0.6875rem', color: 'rgba(186,230,253,0.8)', fontWeight: 600,
-                                  textTransform: 'uppercase', letterSpacing: '0.1em', mt: 0.25 }}>
+                <Typography sx={{ fontSize: '0.625rem', color: 'rgba(148, 163, 184, 0.7)', fontWeight: 700,
+                                  textTransform: 'uppercase', letterSpacing: '0.08em', mt: 0.25 }}>
                   แผงควบคุมหลัก
                 </Typography>
               </Box>
@@ -104,11 +126,12 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, isMobileOpen, o
                 size="small"
                 sx={{
                   display: { xs: 'none', md: 'flex' },
-                  color: 'rgba(186,230,253,0.8)',
-                  bgcolor: 'rgba(255,255,255,0.08)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: 1.5, width: 28, height: 28,
-                  '&:hover': { bgcolor: 'rgba(255,255,255,0.15)', color: '#fff' },
+                  color: 'rgba(148, 163, 184, 0.9)',
+                  bgcolor: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: 2, width: 28, height: 28,
+                  transition: 'all 0.25s',
+                  '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.12)', color: '#ffffff', transform: 'scale(1.05)' },
                 }}
               >
                 <ChevronLeftIcon
@@ -124,11 +147,11 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, isMobileOpen, o
                 size="small"
                 sx={{
                   display: { xs: 'flex', md: 'none' },
-                  color: 'rgba(186,230,253,0.8)',
-                  bgcolor: 'rgba(255,255,255,0.08)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: 1.5, width: 28, height: 28,
-                  '&:hover': { bgcolor: 'rgba(255,255,255,0.15)', color: '#fff' },
+                  color: 'rgba(148, 163, 184, 0.9)',
+                  bgcolor: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: 2, width: 28, height: 28,
+                  '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.12)', color: '#ffffff' },
                 }}
               >
                 <CloseIcon sx={{ fontSize: 16 }} />
@@ -138,7 +161,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, isMobileOpen, o
         </Box>
 
         {/* Navigation */}
-        <List sx={{ px: isCollapsed ? 1 : 1.5, py: 1.5, '& .MuiListItemButton-root': { mb: 0.5 } }}>
+        <List sx={{ px: isCollapsed ? 1 : 1.75, py: 2, '& .MuiListItemButton-root': { mb: 0.75 } }}>
           {NAV_ITEMS.map(item => {
             const isActive = location.pathname === item.path;
             return (
@@ -146,23 +169,45 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, isMobileOpen, o
                 <ListItemButton
                   onClick={() => handleNav(item.path)}
                   sx={{
-                    borderRadius: 2.5,
-                    minHeight: 40,
+                    borderRadius: 3,
+                    minHeight: 44,
                     justifyContent: isCollapsed ? 'center' : 'flex-start',
-                    px: isCollapsed ? 0 : 1.5, py: 0.875,
-                    borderLeft: isCollapsed ? 'none' : `3px solid ${isActive ? '#4fc3f7' : 'transparent'}`,
-                    bgcolor: isActive ? 'rgba(255,255,255,0.12)' : 'transparent',
-                    color: isActive ? '#fff' : 'rgba(186,230,253,0.75)',
-                    transition: 'all 0.2s',
-                    '&:hover': { bgcolor: 'rgba(255,255,255,0.08)', color: '#fff' },
-                    '&:active': { transform: 'scale(0.98)' },
+                    px: isCollapsed ? 0 : 2, py: 1,
+                    position: 'relative',
+                    bgcolor: isActive ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
+                    border: '1px solid',
+                    borderColor: isActive ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
+                    boxShadow: isActive ? '0 8px 16px rgba(0,0,0,0.12), inset 0 1px 1px rgba(255,255,255,0.05)' : 'none',
+                    color: isActive ? '#ffffff' : 'rgba(148, 163, 184, 0.8)',
+                    transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                    '&:hover': {
+                      bgcolor: isActive ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.04)',
+                      color: '#ffffff',
+                      transform: 'translateX(2px)',
+                    },
+                    '&:active': { transform: 'scale(0.97)' },
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      left: 6,
+                      top: '25%',
+                      height: '50%',
+                      width: 3,
+                      borderRadius: 99,
+                      bgcolor: '#ffdb1b',
+                      boxShadow: '0 0 8px #ffdb1b',
+                      opacity: isActive ? 1 : 0,
+                      transition: 'opacity 0.2s ease',
+                      display: isCollapsed ? 'none' : 'block',
+                    }
                   }}
                 >
                   <ListItemIcon
                     sx={{
-                      minWidth: isCollapsed ? 0 : 32,
-                      color: 'inherit',
+                      minWidth: isCollapsed ? 0 : 34,
+                      color: isActive ? '#ffdb1b' : 'inherit',
                       justifyContent: 'center',
+                      transition: 'color 0.25s ease',
                     }}
                   >
                     {item.icon}
@@ -186,7 +231,9 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, isMobileOpen, o
       {/* Footer: User badge */}
       <Box
         sx={{
-          p: isCollapsed ? 1 : 2, borderTop: '1px solid rgba(30,60,100,0.4)',
+          p: isCollapsed ? 1 : 2.5,
+          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+          bgcolor: 'rgba(9, 18, 44, 0.2)',
           display: 'flex', justifyContent: isCollapsed ? 'center' : 'flex-start',
           position: 'relative', zIndex: 1,
         }}
@@ -194,20 +241,22 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, isMobileOpen, o
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, overflow: 'hidden' }}>
           <Box
             sx={{
-              width: 32, height: 32, borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.15)', display: 'flex',
-              alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              width: 32, height: 32, borderRadius: '50%',
+              bgcolor: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
             }}
           >
-            <PersonIcon sx={{ fontSize: 16, color: 'rgba(186,230,253,0.8)' }} />
+            <PersonIcon sx={{ fontSize: 16, color: 'rgba(148, 163, 184, 0.8)' }} />
           </Box>
           {!isCollapsed && (
             <Box sx={{ overflow: 'hidden' }}>
-              <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap' }}>
-                เจ้าหน้าที่บริการลูกค้า uFriend
+              <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#ffffff', whiteSpace: 'nowrap', letterSpacing: '0.01em' }}>
+                ผู้ดูแลระบบ uFriend
               </Typography>
-              <Typography sx={{ fontSize: '0.6875rem', color: 'rgba(147,197,253,0.6)', whiteSpace: 'nowrap' }}>
-                บทบาท: ดูแลลูกค้าสัมพันธ์ (CX)
+              <Typography sx={{ fontSize: '0.625rem', color: 'rgba(148, 163, 184, 0.5)', whiteSpace: 'nowrap', fontWeight: 600 }}>
+                บทบาท: เจ้าหน้าที่บริการ (CX)
               </Typography>
             </Box>
           )}
