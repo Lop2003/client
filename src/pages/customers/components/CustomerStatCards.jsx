@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import Skeleton from '@mui/material/Skeleton';
 import PeopleIcon from '@mui/icons-material/People';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
-import { fetchSummary } from '../../services/statsService';
+import { fetchSummary } from '../../../services/statsService';
 
 const STAT_CONFIG = [
   { key: 'all',       label: 'ลูกค้าทั้งหมด',   statusVal: '',          color: '#0051BA', summaryKey: 'total_customers', icon: <PeopleIcon sx={{ fontSize: 18 }} /> },
@@ -14,10 +15,10 @@ const STAT_CONFIG = [
   { key: 'completed', label: 'จบสัญญาแล้ว',    statusVal: 'completed', color: '#64748B', summaryKey: 'completed_count', icon: <TaskAltIcon sx={{ fontSize: 18 }} /> },
 ];
 
-function StatCard({ label, value, color, icon, isActive, onClick }) {
+function StatCard({ label, value, color, icon, isActive, onClick, isLoading }) {
   return (
     <Box
-      onClick={onClick}
+      onClick={isLoading ? undefined : onClick}
       sx={{
         bgcolor: 'rgba(255, 255, 255, 0.75)',
         backdropFilter: 'blur(20px)',
@@ -25,21 +26,23 @@ function StatCard({ label, value, color, icon, isActive, onClick }) {
         borderRadius: '20px',
         border: '1.5px solid',
         borderColor: isActive ? color : 'rgba(255, 255, 255, 0.5)',
-        cursor: 'pointer',
+        cursor: isLoading ? 'default' : 'pointer',
         transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
         boxShadow: isActive 
           ? `0 12px 28px -10px ${color}35, 0 0 0 3px ${color}15` 
           : '0 8px 30px rgba(0, 81, 186, 0.02)',
         position: 'relative',
         overflow: 'hidden',
-        '&:hover': { 
-          borderColor: color, 
-          transform: 'translateY(-2px)',
-          boxShadow: isActive 
-            ? `0 14px 32px -8px ${color}45, 0 0 0 3px ${color}20` 
-            : `0 10px 25px -8px ${color}20`,
-        },
-        '&:active': { transform: 'scale(0.98)' },
+        ...(!isLoading && {
+          '&:hover': { 
+            borderColor: color, 
+            transform: 'translateY(-2px)',
+            boxShadow: isActive 
+              ? `0 14px 32px -8px ${color}45, 0 0 0 3px ${color}20` 
+              : `0 10px 25px -8px ${color}20`,
+          },
+          '&:active': { transform: 'scale(0.98)' },
+        })
       }}
     >
       {/* Decorative background glow */}
@@ -72,19 +75,33 @@ function StatCard({ label, value, color, icon, isActive, onClick }) {
       </Box>
 
       <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-        <Typography sx={{ 
-          fontSize: '1.625rem', 
-          fontWeight: 800, 
-          color: isActive ? color : 'text.primary', 
-          lineHeight: 1.1,
-          fontFamily: '"Plus Jakarta Sans", sans-serif',
-          letterSpacing: '-0.02em'
-        }}>
-          {value.toLocaleString()}
-        </Typography>
-        <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'text.disabled', ml: 0.5 }}>
-          ราย
-        </Typography>
+        {isLoading ? (
+          <Skeleton 
+            variant="rounded" 
+            width="55%" 
+            height={28} 
+            sx={{ 
+              borderRadius: '6px',
+              bgcolor: 'rgba(0, 81, 186, 0.06)'
+            }} 
+          />
+        ) : (
+          <>
+            <Typography sx={{ 
+              fontSize: '1.625rem', 
+              fontWeight: 800, 
+              color: isActive ? color : 'text.primary', 
+              lineHeight: 1.1,
+              fontFamily: '"Plus Jakarta Sans", sans-serif',
+              letterSpacing: '-0.02em'
+            }}>
+              {value.toLocaleString()}
+            </Typography>
+            <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'text.disabled', ml: 0.5 }}>
+              ราย
+            </Typography>
+          </>
+        )}
       </Box>
     </Box>
   );
@@ -92,13 +109,17 @@ function StatCard({ label, value, color, icon, isActive, onClick }) {
 
 export default function CustomerStatCards({ selectedStatus, setSelectedStatus }) {
   const [summary, setSummary] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const loadSummary = useCallback(async () => {
+    setIsLoading(true);
     try {
       const data = await fetchSummary();
       setSummary(data);
     } catch (err) {
       console.error('Failed to fetch summary for stat cards:', err);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
@@ -129,6 +150,7 @@ export default function CustomerStatCards({ selectedStatus, setSelectedStatus })
           color={color}
           icon={icon}
           isActive={selectedStatus === statusVal}
+          isLoading={isLoading}
           onClick={() =>
             setSelectedStatus(
               statusVal === '' ? '' : selectedStatus === statusVal ? '' : statusVal

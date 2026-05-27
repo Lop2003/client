@@ -14,13 +14,13 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import StarIcon from '@mui/icons-material/Star';
 import CheckIcon from '@mui/icons-material/Check';
-import SearchableCustomerDropdown from '../../components/SearchableCustomerDropdown';
+import SearchableCustomerDropdown from '../../../components/SearchableCustomerDropdown';
 
 const CATEGORIES = [
-  { value: 'service',  label: 'ด้านการบริการของพนักงานสาขา/ฝ่ายขาย' },
-  { value: 'payment',  label: 'ด้านช่องทางการจ่ายค่างวดและกระบวนการทวงถาม' },
-  { value: 'product',  label: 'ด้านอุปกรณ์/สินค้าและสัญญา (iPhone, iPad)' },
-  { value: 'branch',   label: 'ด้านสถานที่และการเดินทางอำนวยความสะดวกในสาขา' },
+  { value: 'service', label: 'ด้านการบริการของพนักงานสาขา/ฝ่ายขาย' },
+  { value: 'payment', label: 'ด้านช่องทางการจ่ายค่างวดและกระบวนการทวงถาม' },
+  { value: 'product', label: 'ด้านอุปกรณ์/สินค้าและสัญญา (iPhone, iPad)' },
+  { value: 'branch', label: 'ด้านสถานที่และการเดินทางอำนวยความสะดวกในสาขา' },
 ];
 
 export default function FeedbackForm({
@@ -46,7 +46,7 @@ export default function FeedbackForm({
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', py: 2 }}>
       {/* Back button */}
-      <Box sx={{ width: '100%', maxWidth: 860, mb: 2.5, display: 'flex' }}>
+      <Box sx={{ width: '100%', maxWidth: 1400, mb: 2.5, display: 'flex' }}>
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={onCancel}
@@ -71,7 +71,7 @@ export default function FeedbackForm({
         onSubmit={handleSubmit}
         sx={{
           width: '100%',
-          maxWidth: 860,
+          maxWidth: 1400,
           borderRadius: '24px',
           background: 'rgba(255, 255, 255, 0.75)',
           backdropFilter: 'blur(20px)',

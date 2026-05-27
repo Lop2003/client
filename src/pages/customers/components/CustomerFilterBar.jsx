@@ -8,6 +8,7 @@ import FormControl from '@mui/material/FormControl';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 
 /**
  * CustomerFilterBar — filter bar สำหรับหน้า Customers
@@ -20,6 +21,7 @@ export default function CustomerFilterBar({
   selectedStatus,
   setSelectedStatus,
   branches,
+  isLoading = false,
 }) {
   return (
     <Paper
@@ -58,6 +60,11 @@ export default function CustomerFilterBar({
               <SearchIcon sx={{ fontSize: 16, color: 'text.secondary', mr: 0.5 }} />
             </InputAdornment>
           ),
+          endAdornment: isLoading ? (
+            <InputAdornment position="end">
+              <CircularProgress size={16} thickness={5} sx={{ color: 'primary.main', mr: 0.5 }} />
+            </InputAdornment>
+          ) : null
         }}
       />
 

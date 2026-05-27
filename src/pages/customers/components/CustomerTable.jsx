@@ -13,8 +13,10 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import InfoIcon from '@mui/icons-material/Info';
-import { getCustomerStatus } from '../../utils/statusHelpers';
-import { formatContractId } from '../../utils/formatters';
+import Skeleton from '@mui/material/Skeleton';
+import { getCustomerStatus } from '../../../utils/statusHelpers';
+import { formatContractId } from '../../../utils/formatters';
+import TableLoader from './TableLoader';
 
 const HEAD_CELLS = [
   { id: 'created_at', label: 'รหัสสัญญา', sortable: true },
@@ -39,6 +41,7 @@ export default function CustomerTable({
   sortOrder = 'desc',
   setSortOrder,
   onRowClick,
+  isLoading = false,
 }) {
   const handleSort = (field) => {
     if (!field || !setSortBy || !setSortOrder) return;
@@ -58,12 +61,12 @@ export default function CustomerTable({
       sx={{
         borderRadius: '24px',
         overflow: 'hidden',
-        background: 'rgba(255, 255, 255, 0.75)',
-        backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255, 255, 255, 0.5)',
-        boxShadow: '0 10px 30px -10px rgba(0, 81, 186, 0.05), 0 1px 3px rgba(0, 0, 0, 0.01)',
+        background: '#ffffff',
+        border: '1px solid rgba(226, 232, 240, 0.8)',
+        boxShadow: '0 10px 30px -10px rgba(9, 18, 44, 0.04), 0 1px 3px rgba(0, 0, 0, 0.01)',
       }}
     >
+      <TableLoader isLoading={isLoading} />
       <TableContainer>
         <Table size="small">
           <TableHead>
@@ -105,16 +108,32 @@ export default function CustomerTable({
 
           <TableBody>
             {customers.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={8} align="center" sx={{ py: 10 }}>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5 }}>
-                    <InfoIcon sx={{ fontSize: 32, color: 'text.disabled', opacity: 0.6 }} />
-                    <Typography sx={{ fontSize: '0.75rem', color: 'text.disabled', fontWeight: 700 }}>
-                      ไม่พบบัญชีสัญญาของลูกค้าตามเงื่อนไขการค้นหา
-                    </Typography>
-                  </Box>
-                </TableCell>
-              </TableRow>
+              isLoading ? (
+                // แสดงสเกเลตันแถวตารางในตอนโหลดครั้งแรกสุด (Initial Load)
+                [1, 2, 3, 4, 5].map(i => (
+                  <TableRow key={i}>
+                    <TableCell><Skeleton variant="text" width="80%" height={20} /></TableCell>
+                    <TableCell><Skeleton variant="text" width="60%" height={20} /></TableCell>
+                    <TableCell><Skeleton variant="text" width="70%" height={20} /></TableCell>
+                    <TableCell><Skeleton variant="text" width="75%" height={20} /></TableCell>
+                    <TableCell><Skeleton variant="text" width="50%" height={20} /></TableCell>
+                    <TableCell><Skeleton variant="text" width="40%" height={20} /></TableCell>
+                    <TableCell><Skeleton variant="rounded" width={68} height={20} sx={{ borderRadius: '6px' }} /></TableCell>
+                    <TableCell align="right"><Skeleton variant="rounded" width={90} height={26} sx={{ borderRadius: '8px' }} /></TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={8} align="center" sx={{ py: 10 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5 }}>
+                      <InfoIcon sx={{ fontSize: 32, color: 'text.disabled', opacity: 0.6 }} />
+                      <Typography sx={{ fontSize: '0.75rem', color: 'text.disabled', fontWeight: 700 }}>
+                        ไม่พบบัญชีสัญญาของลูกค้าตามเงื่อนไขการค้นหา
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              )
             ) : (
               customers.map(c => {
                 const s = getCustomerStatus(c.status);

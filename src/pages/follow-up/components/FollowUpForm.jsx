@@ -13,12 +13,12 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import CheckIcon from '@mui/icons-material/Check';
-import SearchableCustomerDropdown from '../../components/SearchableCustomerDropdown';
+import SearchableCustomerDropdown from '../../../components/SearchableCustomerDropdown';
 
 const FOLLOW_UP_TYPES = [
   { value: 'payment_remind', label: 'โทรแจ้งเตือนการค้างชำระเงิน (Payment Remind)' },
   { value: 'feedback_reply', label: 'โทรขอโทษและชี้แจงคำติชมความพึงพอใจ (Feedback Reply)' },
-  { value: 'promotion',      label: 'โทรแจ้งเสนอโปรโมชั่นพิเศษ (Promotion)' },
+  { value: 'promotion', label: 'โทรแจ้งเสนอโปรโมชั่นพิเศษ (Promotion)' },
 ];
 
 export default function FollowUpForm({
@@ -39,7 +39,7 @@ export default function FollowUpForm({
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', py: 2 }}>
       {/* Back button */}
-      <Box sx={{ width: '100%', maxWidth: 860, mb: 2.5, display: 'flex' }}>
+      <Box sx={{ width: '100%', maxWidth: 1400, mb: 2.5, display: 'flex' }}>
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={onCancel}
@@ -64,7 +64,7 @@ export default function FollowUpForm({
         onSubmit={handleSubmit}
         sx={{
           width: '100%',
-          maxWidth: 860,
+          maxWidth: 1400,
           borderRadius: '24px',
           background: 'rgba(255, 255, 255, 0.75)',
           backdropFilter: 'blur(20px)',

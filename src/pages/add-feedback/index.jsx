@@ -2,7 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import { useCustomers } from '../../hooks/useCustomers';
 import { useAddFeedback } from '../../hooks/useAddFeedback';
 import { PATHS } from '../../routes/paths';
-import FeedbackForm from './FeedbackForm';
+import FeedbackForm from './components/FeedbackForm';
+
 
 export default function AddFeedbackPage() {
   const navigate = useNavigate();

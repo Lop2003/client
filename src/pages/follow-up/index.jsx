@@ -2,7 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import { useCustomers } from '../../hooks/useCustomers';
 import { useAddFollowUp } from '../../hooks/useAddFollowUp';
 import { PATHS } from '../../routes/paths';
-import FollowUpForm from './FollowUpForm';
+import FollowUpForm from './components/FollowUpForm';
+
 
 export default function FollowUpPage() {
   const navigate = useNavigate();

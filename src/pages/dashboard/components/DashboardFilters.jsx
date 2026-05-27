@@ -5,11 +5,13 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Typography from '@mui/material/Typography';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function DashboardFilters({
   selectedBranch,
   setSelectedBranch,
   branches = [],
+  isLoading = false,
 }) {
   return (
     <Paper
@@ -33,7 +35,11 @@ export default function DashboardFilters({
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           color: 'primary.main',
         }}>
-          <FilterAltIcon sx={{ fontSize: 16 }} />
+          {isLoading ? (
+            <CircularProgress size={14} sx={{ color: 'primary.main' }} />
+          ) : (
+            <FilterAltIcon sx={{ fontSize: 16 }} />
+          )}
         </Box>
         <Typography sx={{ fontSize: '0.75rem', fontWeight: 800, color: 'text.secondary', letterSpacing: '0.01em' }}>
           เลือกวิเคราะห์รายพื้นที่สาขา:
@@ -46,6 +52,7 @@ export default function DashboardFilters({
           value={selectedBranch}
           onChange={e => setSelectedBranch(e.target.value)}
           displayEmpty
+          disabled={isLoading}
           sx={{ 
             borderRadius: '12px', 
             fontSize: '0.75rem',
@@ -67,3 +74,4 @@ export default function DashboardFilters({
     </Paper>
   );
 }
+

@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import { useSearchParams } from 'react-router-dom';
-import CustomerStatCards from './CustomerStatCards';
-import CustomerFilterBar from './CustomerFilterBar';
-import CustomerTable from './CustomerTable';
-import CustomerDetailModal from './CustomerDetailModal';
+import CustomerStatCards from './components/CustomerStatCards';
+import CustomerFilterBar from './components/CustomerFilterBar';
+import CustomerTable from './components/CustomerTable';
+import CustomerDetailModal from './components/CustomerDetailModal';
+
 import { useCustomers } from '../../hooks/useCustomers';
 import { useBranches } from '../../hooks/useBranches';
 
@@ -38,6 +39,7 @@ export default function CustomersPage() {
     limit,
     setPage,
     setLimit,
+    isLoading,
   } = useCustomers({
     search: debouncedSearch,
     branch: selectedBranch,
@@ -47,6 +49,10 @@ export default function CustomersPage() {
   });
 
   const { branches } = useBranches();
+
+  // Combined loading state: true when debouncing search OR when API is loading
+  const isSearching = searchQuery !== debouncedSearch;
+  const showLoading = isLoading || isSearching;
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -66,6 +72,7 @@ export default function CustomersPage() {
         selectedStatus={selectedStatus}
         setSelectedStatus={setSelectedStatus}
         branches={branches}
+        isLoading={showLoading}
       />
 
       {/* Table */}
@@ -81,6 +88,7 @@ export default function CustomersPage() {
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
         onRowClick={id => setSearchParams({ id })}
+        isLoading={showLoading}
       />
 
       {/* Detail Modal */}

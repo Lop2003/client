@@ -5,21 +5,26 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 import PieChartIcon from '@mui/icons-material/PieChart';
 import TuneIcon from '@mui/icons-material/Tune';
 import { useDashboardStats } from '../../hooks/useDashboardStats';
-import DashboardSection from './DashboardSection';
-import DashboardFilters from './DashboardFilters';
-import DashboardCards from './DashboardCards';
-import DashboardCharts from './DashboardCharts';
+import DashboardSection from './components/DashboardSection';
+import DashboardFilters from './components/DashboardFilters';
+import DashboardCards from './components/DashboardCards';
+import DashboardCharts from './components/DashboardCharts';
+import { FilterSkeleton, KPICardsSkeleton, ChartsSkeleton } from './components/DashboardSkeleton';
+
 
 export default function DashboardPage() {
   const [selectedBranch, setSelectedBranch] = useState('');
 
-  const { summaryStats, branchStats } = useDashboardStats({ branch: selectedBranch });
+  const { summaryStats, branchStats, isLoading } = useDashboardStats({ branch: selectedBranch });
 
   // รวบรวมรายชื่อสาขาทั้งหมดจากผลลัพธ์ของ branchStats เพื่อส่งต่อให้ Dropdown
   const branchesList = useMemo(() => {
     if (!branchStats || !branchStats.length) return [];
     return branchStats.map(stat => stat.branch).filter(Boolean);
   }, [branchStats]);
+
+  // ตรวจสอบว่าเป็นการโหลดข้อมูลครั้งแรกสุดหรือไม่ (ไม่มีรายชื่อสาขาเลย)
+  const isInitialLoad = isLoading && branchesList.length === 0;
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -29,11 +34,16 @@ export default function DashboardPage() {
         icon={<TuneIcon sx={{ fontSize: 13, color: '#9ca3af' }} />}
         label="ตัวกรองเลือกสาขาแดชบอร์ด (Branch Filter)"
       >
-        <DashboardFilters
-          selectedBranch={selectedBranch}
-          setSelectedBranch={setSelectedBranch}
-          branches={branchesList}
-        />
+        {isInitialLoad ? (
+          <FilterSkeleton />
+        ) : (
+          <DashboardFilters
+            selectedBranch={selectedBranch}
+            setSelectedBranch={setSelectedBranch}
+            branches={branchesList}
+            isLoading={isLoading}
+          />
+        )}
       </DashboardSection>
 
       {/* KPI Cards */}
@@ -41,7 +51,7 @@ export default function DashboardPage() {
         icon={<AssessmentIcon sx={{ fontSize: 13, color: '#9ca3af' }} />}
         label="ดัชนีชี้วัดหลัก (KPI & Metrics)"
         rightSlot={
-          selectedBranch && (
+          selectedBranch && !isLoading && (
             <Typography
               sx={{
                 fontSize: '0.6875rem', fontWeight: 800, color: 'primary.main',
@@ -54,9 +64,13 @@ export default function DashboardPage() {
           )
         }
       >
-        <DashboardCards
-          summaryStats={summaryStats}
-        />
+        {isLoading ? (
+          <KPICardsSkeleton />
+        ) : (
+          <DashboardCards
+            summaryStats={summaryStats}
+          />
+        )}
       </DashboardSection>
 
       {/* Charts */}
@@ -64,14 +78,19 @@ export default function DashboardPage() {
         icon={<PieChartIcon sx={{ fontSize: 13, color: '#9ca3af' }} />}
         label="การวิเคราะห์และแนวโน้มความพึงพอใจ (Charts & Graphs)"
       >
-        <DashboardCharts
-          branchStats={branchStats}
-          summaryStats={summaryStats}
-          selectedBranch={selectedBranch}
-          setSelectedBranch={setSelectedBranch}
-        />
+        {isLoading ? (
+          <ChartsSkeleton />
+        ) : (
+          <DashboardCharts
+            branchStats={branchStats}
+            summaryStats={summaryStats}
+            selectedBranch={selectedBranch}
+            setSelectedBranch={setSelectedBranch}
+          />
+        )}
       </DashboardSection>
 
     </Box>
   );
 }
+
