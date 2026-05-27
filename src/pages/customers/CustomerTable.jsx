@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -29,20 +28,17 @@ const HEAD_CELLS = [
 
 export default function CustomerTable({
   customers = [],
+  total = 0,
+  page = 1,
+  limit = 10,
+  onPageChange,
+  onLimitChange,
   sortBy = 'created_at',
   setSortBy,
   sortOrder = 'desc',
   setSortOrder,
   onRowClick,
 }) {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  // Reset page when customers list changes
-  useEffect(() => {
-    setPage(0);
-  }, [customers]);
-
   const handleSort = (field) => {
     if (!field || !setSortBy || !setSortOrder) return;
     if (sortBy === field) {
@@ -53,7 +49,8 @@ export default function CustomerTable({
     }
   };
 
-  const paginated = customers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  // MUI TablePagination ใช้ page 0-indexed แต่ server ใช้ 1-indexed
+  const muiPage = page - 1;
 
   return (
     <Paper
@@ -100,7 +97,7 @@ export default function CustomerTable({
           </TableHead>
 
           <TableBody>
-            {paginated.length === 0 ? (
+            {customers.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} align="center" sx={{ py: 6 }}>
                   <Typography sx={{ fontSize: '0.75rem', color: 'text.disabled' }}>
@@ -109,7 +106,7 @@ export default function CustomerTable({
                 </TableCell>
               </TableRow>
             ) : (
-              paginated.map(c => {
+              customers.map(c => {
                 const s = getCustomerStatus(c.status);
                 const isOverdue = c.status === 'overdue';
                 return (
@@ -183,11 +180,13 @@ export default function CustomerTable({
 
       <TablePagination
         component="div"
-        count={customers.length}
-        page={page}
-        onPageChange={(_, newPage) => setPage(newPage)}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={e => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+        count={total}
+        page={muiPage}
+        onPageChange={(_, newPage) => onPageChange && onPageChange(newPage + 1)}
+        rowsPerPage={limit}
+        onRowsPerPageChange={e => {
+          onLimitChange && onLimitChange(parseInt(e.target.value, 10));
+        }}
         rowsPerPageOptions={[5, 10, 20, 50]}
         labelRowsPerPage="แสดงหน้าละ:"
         labelDisplayedRows={({ from, to, count }) => `${from}–${to} จาก ${count} รายการ`}

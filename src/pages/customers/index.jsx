@@ -18,7 +18,15 @@ export default function CustomersPage() {
   const [sortBy, setSortBy]                 = useState('created_at');
   const [sortOrder, setSortOrder]           = useState('desc');
 
-  const { customers } = useCustomers({
+  const {
+    customers,
+    total,
+    totalPages,
+    page,
+    limit,
+    setPage,
+    setLimit,
+  } = useCustomers({
     search: searchQuery,
     branch: selectedBranch,
     status: selectedStatus,
@@ -33,7 +41,6 @@ export default function CustomersPage() {
 
       {/* Quick Stats */}
       <CustomerStatCards
-        customers={customers}
         selectedStatus={selectedStatus}
         setSelectedStatus={setSelectedStatus}
       />
@@ -52,6 +59,11 @@ export default function CustomersPage() {
       {/* Table */}
       <CustomerTable
         customers={customers}
+        total={total}
+        page={page}
+        limit={limit}
+        onPageChange={setPage}
+        onLimitChange={setLimit}
         sortBy={sortBy}
         setSortBy={setSortBy}
         sortOrder={sortOrder}

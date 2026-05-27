@@ -11,6 +11,8 @@ export async function fetchCustomers(params = {}) {
   if (params.status) query.append("status", params.status);
   if (params.sortBy) query.append("sort_by", params.sortBy);
   if (params.sortOrder) query.append("sort_order", params.sortOrder);
+  if (params.page) query.append("page", params.page);
+  if (params.limit) query.append("limit", params.limit);
   const qs = query.toString();
   return request(`/api/customers/${qs ? `?${qs}` : ""}`);
 }

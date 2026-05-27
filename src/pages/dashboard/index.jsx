@@ -9,7 +9,6 @@ import { useNavigate } from 'react-router-dom';
 import { useCustomers } from '../../hooks/useCustomers';
 import { useDashboardStats } from '../../hooks/useDashboardStats';
 import { useCustomerFilters } from '../../hooks/useCustomerFilters';
-import { useBranches } from '../../hooks/useBranches';
 import { useFeedbacks } from '../../hooks/useFeedbacks';
 import { PATHS } from '../../routes/paths';
 import DashboardSection from './DashboardSection';
@@ -31,17 +30,31 @@ export default function DashboardPage() {
     hasFilters,
   } = useCustomerFilters();
 
-  const { summaryStats, branchStats, customerBranchMap } = useDashboardStats({ branch: selectedBranch });
-  const { customers } = useCustomers({ search: searchQuery, branch: selectedBranch, status: selectedStatus, sortBy, sortOrder });
-  const { branches } = useBranches();
-  const { filteredFeedbacks } = useFeedbacks({ branch: selectedBranch, customerBranchMap });
+  const { summaryStats, branchStats, branches } = useDashboardStats({ branch: selectedBranch });
 
-  // คำนวณ satisfactionRate จาก filteredFeedbacks จริงๆ (useDashboardStats ไม่รู้จัก feedbacks)
+  const {
+    customers,
+    total,
+    page,
+    limit,
+    setPage,
+    setLimit,
+  } = useCustomers({
+    search: searchQuery,
+    branch: selectedBranch,
+    status: selectedStatus,
+    sortBy,
+    sortOrder,
+  });
+
+  const { feedbacks } = useFeedbacks({ branch: selectedBranch });
+
+  // คำนวณ satisfactionRate จาก feedbacks จริงๆ
   const satisfactionRate = useMemo(() => {
-    if (!filteredFeedbacks.length) return '0';
-    const pos = filteredFeedbacks.filter(fb => fb.sentiment === 'positive').length;
-    return ((pos / filteredFeedbacks.length) * 100).toFixed(0);
-  }, [filteredFeedbacks]);
+    if (!feedbacks.length) return '0';
+    const pos = feedbacks.filter(fb => fb.sentiment === 'positive').length;
+    return ((pos / feedbacks.length) * 100).toFixed(0);
+  }, [feedbacks]);
 
   const statsForCards = useMemo(() => ({
     ...summaryStats,
@@ -101,7 +114,7 @@ export default function DashboardPage() {
       >
         <DashboardCharts
           branchStats={branchStats}
-          filteredFeedbacks={filteredFeedbacks}
+          filteredFeedbacks={feedbacks}
           selectedBranch={selectedBranch}
           setSelectedBranch={setSelectedBranch}
         />
@@ -114,6 +127,11 @@ export default function DashboardPage() {
       >
         <CustomerTable
           customers={customers}
+          total={total}
+          page={page}
+          limit={limit}
+          onPageChange={setPage}
+          onLimitChange={setLimit}
           sortBy={sortBy}
           setSortBy={setSortBy}
           sortOrder={sortOrder}

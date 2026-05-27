@@ -1,15 +1,13 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { fetchFeedbacks } from '../services/feedbackService';
 
 /**
- * useFeedbacks — fetch feedbacks ทั้งหมด และ filter ตาม branch
- * ถ้า branch ว่างหรือไม่ระบุ → return feedbacks ทั้งหมด
+ * useFeedbacks — fetch feedbacks จาก API พร้อม filter ตาม branch (server-side)
  * @param {Object} options
- * @param {string} [options.branch] - กรอง feedback ตามสาขา
- * @param {Map} [options.customerBranchMap] - Map<customerId, branch> สำหรับ filter
+ * @param {string} [options.branch] - กรอง feedback ตามสาขา (ส่งไป backend)
  */
 export function useFeedbacks(options = {}) {
-  const { branch = '', customerBranchMap = new Map() } = options;
+  const { branch = '' } = options;
 
   const [feedbacks, setFeedbacks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -19,7 +17,7 @@ export function useFeedbacks(options = {}) {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await fetchFeedbacks();
+      const data = await fetchFeedbacks({ branch });
       setFeedbacks(data || []);
     } catch (err) {
       console.error('Failed to fetch feedbacks:', err);
@@ -28,21 +26,14 @@ export function useFeedbacks(options = {}) {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [branch]);
 
   useEffect(() => {
     loadFeedbacks();
   }, [loadFeedbacks]);
 
-  // Filter feedbacks by branch ถ้ามี customerBranchMap และ branch ระบุ
-  const filteredFeedbacks = useMemo(() => {
-    if (!branch || customerBranchMap.size === 0) return feedbacks;
-    return feedbacks.filter(fb => customerBranchMap.get(fb.customer_id) === branch);
-  }, [feedbacks, branch, customerBranchMap]);
-
   return {
     feedbacks,
-    filteredFeedbacks,
     isLoading,
     error,
     refetch: loadFeedbacks,

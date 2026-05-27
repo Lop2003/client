@@ -1,11 +1,13 @@
+import { useState, useEffect, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import { fetchSummary } from '../../services/statsService';
 
 const STAT_CONFIG = [
-  { key: 'all',       label: 'ลูกค้าทั้งหมด',   statusVal: '',          color: '#0051BA' },
-  { key: 'active',    label: 'ผ่อนชำระปกติ',   statusVal: 'active',    color: '#057A55' },
-  { key: 'overdue',   label: 'ค้างชำระค่างวด', statusVal: 'overdue',   color: '#C81E1E' },
-  { key: 'completed', label: 'จบสัญญาแล้ว',    statusVal: 'completed', color: '#64748b' },
+  { key: 'all',       label: 'ลูกค้าทั้งหมด',   statusVal: '',          color: '#0051BA', summaryKey: 'total_customers' },
+  { key: 'active',    label: 'ผ่อนชำระปกติ',   statusVal: 'active',    color: '#057A55', summaryKey: 'active_count' },
+  { key: 'overdue',   label: 'ค้างชำระค่างวด', statusVal: 'overdue',   color: '#C81E1E', summaryKey: 'overdue_count' },
+  { key: 'completed', label: 'จบสัญญาแล้ว',    statusVal: 'completed', color: '#64748b', summaryKey: 'completed_count' },
 ];
 
 function StatCard({ label, value, color, isActive, onClick }) {
@@ -45,16 +47,31 @@ function StatCard({ label, value, color, isActive, onClick }) {
 
 /**
  * CustomerStatCards — 4 quick-stat cards (total / active / overdue / completed)
- * @param {Object[]} customers      - รายการลูกค้าปัจจุบัน
+ * ดึงข้อมูลจำนวนจาก /api/stats/summary API (server-side) แทนการนับจาก array ที่ paginate แล้ว
  * @param {string}   selectedStatus - สถานะที่เลือกอยู่
  * @param {Function} setSelectedStatus
  */
-export default function CustomerStatCards({ customers, selectedStatus, setSelectedStatus }) {
+export default function CustomerStatCards({ selectedStatus, setSelectedStatus }) {
+  const [summary, setSummary] = useState(null);
+
+  const loadSummary = useCallback(async () => {
+    try {
+      const data = await fetchSummary();
+      setSummary(data);
+    } catch (err) {
+      console.error('Failed to fetch summary for stat cards:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadSummary();
+  }, [loadSummary]);
+
   const counts = {
-    all:       customers.length,
-    active:    customers.filter(c => c.status === 'active').length,
-    overdue:   customers.filter(c => c.status === 'overdue').length,
-    completed: customers.filter(c => c.status === 'completed').length,
+    all:       summary?.total_customers ?? 0,
+    active:    summary?.active_count ?? 0,
+    overdue:   summary?.overdue_count ?? 0,
+    completed: summary?.completed_count ?? 0,
   };
 
   return (

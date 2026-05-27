@@ -1,17 +1,15 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { fetchCustomers } from "../services/customerService";
 import { fetchSummary, fetchBranchStats } from "../services/statsService";
 
 /**
- * useDashboardStats — fetch summary + branch stats และ compute stats cards
- * ใช้ร่วมกับ useFeedbacks สำหรับ feedbacks list
+ * useDashboardStats — fetch summary + branch stats สำหรับ dashboard
+ * ไม่ดึง customers ทั้งหมดแล้ว — ย้ายไป filter ที่ backend แทน
  */
 export function useDashboardStats(options = {}) {
   const { branch = "" } = options;
 
   const [apiSummary, setApiSummary] = useState(null);
   const [branchStats, setBranchStats] = useState([]);
-  const [allCustomers, setAllCustomers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -19,12 +17,10 @@ export function useDashboardStats(options = {}) {
     setIsLoading(true);
     setError(null);
     try {
-      // ใช้ allSettled เพื่อให้ stats cards ยังแสดงได้แม้ request บางตัว fail
-      const [summaryResult, branchResult, customersResult] =
+      const [summaryResult, branchResult] =
         await Promise.allSettled([
           fetchSummary(),
           fetchBranchStats(),
-          fetchCustomers(),
         ]);
 
       if (summaryResult.status === "fulfilled") {
@@ -37,15 +33,6 @@ export function useDashboardStats(options = {}) {
         setBranchStats(branchResult.value || []);
       } else {
         console.error("fetchBranchStats failed:", branchResult.reason);
-      }
-
-      if (customersResult.status === "fulfilled") {
-        setAllCustomers(customersResult.value || []);
-      } else {
-        console.warn(
-          "fetchCustomers (for branchMap) failed:",
-          customersResult.reason,
-        );
       }
 
       // แสดง error เฉพาะเมื่อ summary หลักโหลดไม่ได้
@@ -66,11 +53,6 @@ export function useDashboardStats(options = {}) {
   useEffect(() => {
     loadData();
   }, [loadData]);
-
-  // Build customer→branch map สำหรับส่งต่อให้ useFeedbacks
-  const customerBranchMap = useMemo(() => {
-    return new Map(allCustomers.map((c) => [c.id, c.branch]));
-  }, [allCustomers]);
 
   // Compute summary stats dynamically สำหรับ branch ที่เลือก หรือ overall
   const summaryStats = useMemo(() => {
@@ -101,10 +83,17 @@ export function useDashboardStats(options = {}) {
     };
   }, [apiSummary, branch, branchStats]);
 
+  // Compute branch list จาก branchStats เพื่อใช้แทน useBranches
+  const branches = useMemo(() => {
+    if (!branchStats || branchStats.length === 0) return [];
+    const list = [...new Set(branchStats.map(s => s.branch).filter(Boolean))];
+    return list.sort();
+  }, [branchStats]);
+
   return {
     summaryStats,
     branchStats,
-    customerBranchMap,
+    branches,
     isLoading,
     error,
     refetch: loadData,
