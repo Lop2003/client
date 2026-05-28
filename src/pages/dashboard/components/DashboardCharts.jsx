@@ -75,10 +75,39 @@ export default function DashboardCharts({
   // 3. Line chart: weekly CSAT trend (represented beautifully with an Area glowing fill)
   const weeklyTrendsData = useMemo(() => {
     const csat = summaryStats.weeklyCSAT || [4.0, 4.0, 4.0, 4.0];
-    return csat.map((score, i) => ({
-      name: `สัปดาห์ ${i + 1}`,
-      score: score,
-    }));
+    const thaiMonths = [
+      'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
+      'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'
+    ];
+    const now = new Date();
+
+    return csat.map((score, i) => {
+      // Calculate start and end offset relative to today
+      // Week 1 (oldest, index 0): now - 28d to now - 21d
+      // Week 2 (index 1): now - 21d to now - 14d
+      // Week 3 (index 2): now - 14d to now - 7d
+      // Week 4 (latest, index 3): now - 7d to now
+      const startOffset = - (4 - i) * 7;
+      const endOffset = - (3 - i) * 7;
+
+      const startDate = new Date(now.getTime() + startOffset * 24 * 60 * 60 * 1000);
+      const endDate = new Date(now.getTime() + endOffset * 24 * 60 * 60 * 1000);
+
+      const startDay = startDate.getDate();
+      const startMonth = thaiMonths[startDate.getMonth()];
+      
+      const endDay = endDate.getDate();
+      const endMonth = thaiMonths[endDate.getMonth()];
+
+      const dateLabel = startMonth === endMonth
+        ? `${startDay}-${endDay} ${startMonth}`
+        : `${startDay} ${startMonth} - ${endDay} ${endMonth}`;
+
+      return {
+        name: dateLabel,
+        score: score,
+      };
+    });
   }, [summaryStats]);
 
   const handleBarClick = (data) => {

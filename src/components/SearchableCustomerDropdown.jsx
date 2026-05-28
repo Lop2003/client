@@ -66,20 +66,7 @@ export default function SearchableCustomerDropdown({
           `${option.name} (${option.product} / สาขา${option.branch})`
         }
         isOptionEqualToValue={(option, value) => option.id === value.id}
-        filterOptions={(options, state) => {
-          // หากเป็นการค้นหาผ่าน Server-side ให้ข้ามการกรองแบบ Local
-          if (onSearchChange) {
-            return options;
-          }
-          const clean = state.inputValue.toLowerCase().trim();
-          return options.filter(c =>
-            c.name.toLowerCase().includes(clean) ||
-            c.phone.toLowerCase().includes(clean) ||
-            c.product.toLowerCase().includes(clean) ||
-            c.branch.toLowerCase().includes(clean) ||
-            c.id.toLowerCase().includes(clean)
-          );
-        }}
+        filterOptions={(options) => options}
         loading={isLoading}
         renderInput={(params) => (
           <TextField

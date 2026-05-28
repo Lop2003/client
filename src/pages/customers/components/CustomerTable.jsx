@@ -56,6 +56,12 @@ export default function CustomerTable({
   // MUI TablePagination ใช้ page 0-indexed แต่ server ใช้ 1-indexed
   const muiPage = page - 1;
 
+  // Dynamic Bounded Pagination:
+  // หากมีรายการข้อมูลเต็มหน้า (customers.length === limit) แสดงว่าน่าจะมีหน้าถัดไปอีก
+  // เราจะตั้งค่า virtualCount ให้ขยายนำหน้าเพจปัจจุบัน 1 แถวเสมอ เพื่อให้ปุ่ม Next ทำงานได้โดยไม่ติดขัดจาก cap
+  const hasMore = customers.length === limit;
+  const virtualCount = hasMore ? Math.max(total, page * limit + 1) : total;
+
   return (
     <Paper
       sx={{
@@ -237,7 +243,7 @@ export default function CustomerTable({
 
       <TablePagination
         component="div"
-        count={total}
+        count={virtualCount}
         page={muiPage}
         onPageChange={(_, newPage) => onPageChange && onPageChange(newPage + 1)}
         rowsPerPage={limit}
@@ -246,7 +252,11 @@ export default function CustomerTable({
         }}
         rowsPerPageOptions={[5, 10, 20, 50]}
         labelRowsPerPage="แสดงรายการต่อหน้า:"
-        labelDisplayedRows={({ from, to, count }) => `${from}–${to} จากทั้งหมด ${count} รายการ`}
+        labelDisplayedRows={({ from, to }) => {
+          // หาก total โดน cap ที่ 10,000 หรือมากกว่า ให้แสดงเป็น "10,000+"
+          const displayCount = total >= 10000 ? '10,000+' : total.toLocaleString();
+          return `${from}–${to} จากทั้งหมด ${displayCount} รายการ`;
+        }}
         sx={{
           borderTop: '1px solid rgba(226, 232, 240, 0.8)',
           bgcolor: 'rgba(248, 250, 252, 0.4)',
