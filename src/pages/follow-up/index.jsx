@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useCustomers } from '../../hooks/useCustomers';
 import { useAddFollowUp } from '../../hooks/useAddFollowUp';
-import { PATHS } from '../../routes/paths';
 import FollowUpForm from './components/FollowUpForm';
-
+import FollowUpTaskManager from './components/FollowUpTaskManager';
 
 export default function FollowUpPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const hasCustomerIdParam = searchParams.has('customerId');
 
   const [searchVal, setSearchVal] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -37,6 +38,11 @@ export default function FollowUpPage() {
     selectedCust,
   } = useAddFollowUp({ customers });
 
+  // Render list manager if customerId param is not present in URL
+  if (!hasCustomerIdParam) {
+    return <FollowUpTaskManager />;
+  }
+
   return (
     <FollowUpForm
       customers={customers}
@@ -53,7 +59,7 @@ export default function FollowUpPage() {
       selectedCust={selectedCust}
       onSearchChange={setSearchVal}
       searchLoading={searchLoading}
-      onCancel={() => navigate(PATHS.CUSTOMERS)}
+      onCancel={() => setSearchParams({})}
     />
   );
 }
