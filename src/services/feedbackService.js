@@ -8,6 +8,8 @@ export async function fetchFeedbacks(params = {}) {
   if (params.branch) query.append("branch", params.branch);
   if (params.category) query.append("category", params.category);
   if (params.rating) query.append("rating", params.rating);
+  if (params.page) query.append("page", params.page);
+  if (params.limit) query.append("limit", params.limit);
   const qs = query.toString();
   return request(`/api/feedbacks${qs ? `?${qs}` : ""}`);
 }

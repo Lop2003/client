@@ -43,8 +43,8 @@ export function useAddFeedback(options = {}) {
       let active = true;
       fetchCustomerDetail(customerId)
         .then(res => {
-          if (active && res?.success && res?.data) {
-            setSelectedCust(res.data);
+          if (active && res) {
+            setSelectedCust(res);
           }
         })
         .catch(err => console.error("Failed to fetch customer detail:", err));
