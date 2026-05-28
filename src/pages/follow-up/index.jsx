@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCustomers } from '../../hooks/useCustomers';
 import { useAddFollowUp } from '../../hooks/useAddFollowUp';
@@ -7,7 +8,24 @@ import FollowUpForm from './components/FollowUpForm';
 
 export default function FollowUpPage() {
   const navigate = useNavigate();
-  const { customers } = useCustomers({ sortBy: 'name', sortOrder: 'asc' });
+
+  const [searchVal, setSearchVal] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  // Debounce การค้นหาฝั่งเซิร์ฟเวอร์
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchVal);
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [searchVal]);
+
+  const { customers, isLoading: searchLoading } = useCustomers({
+    search: debouncedSearch,
+    sortBy: 'name',
+    sortOrder: 'asc',
+    limit: 100, // โหลดสูงสุด 100 รายการต่อการค้นหา
+  });
 
   const {
     customerId, setCustomerId,
@@ -33,6 +51,8 @@ export default function FollowUpPage() {
       isSubmitting={isSubmitting}
       handleSubmit={handleSubmit}
       selectedCust={selectedCust}
+      onSearchChange={setSearchVal}
+      searchLoading={searchLoading}
       onCancel={() => navigate(PATHS.CUSTOMERS)}
     />
   );

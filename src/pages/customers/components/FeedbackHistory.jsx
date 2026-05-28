@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import Chip from '@mui/material/Chip';
 import Rating from '@mui/material/Rating';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import { getSentiment, getFeedbackCategory } from '../../../utils/statusHelpers';

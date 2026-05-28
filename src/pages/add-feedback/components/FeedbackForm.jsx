@@ -39,6 +39,9 @@ export default function FeedbackForm({
   setError,
   isSubmitting,
   handleSubmit,
+  selectedCust,
+  onSearchChange,
+  searchLoading,
   onCancel,
 }) {
   const displayRating = hoverRating !== -1 ? hoverRating : rating;
@@ -115,7 +118,10 @@ export default function FeedbackForm({
           <SearchableCustomerDropdown
             customers={customers}
             selectedCustomerId={customerId}
+            selectedCustomerDetail={selectedCust}
             onChange={id => { setCustomerId(id); setError(''); }}
+            onSearchChange={onSearchChange}
+            isLoading={searchLoading}
             label="เลือกลูกค้าตามสัญญารายการ (พิมพ์ค้นหารายชื่อได้) *"
           />
 

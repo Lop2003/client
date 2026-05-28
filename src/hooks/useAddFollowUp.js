@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { createFollowUp } from '../services/followUpMutations';
+import { fetchCustomerDetail } from '../services/customerService';
 import { showToast } from '../components/Toast';
 import { PATHS } from '../routes/paths';
 
@@ -9,13 +10,17 @@ export function useAddFollowUp(options = {}) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const routerCustomerId = location.state?.customerId;
+  // รองรับการดึง customerId จากทั้ง location state และ URL query parameter
+  const searchParams = new URLSearchParams(location.search);
+  const queryCustomerId = searchParams.get('customerId');
+  const routerCustomerId = location.state?.customerId || queryCustomerId || '';
 
-  const [customerId, setCustomerId] = useState(routerCustomerId || '');
+  const [customerId, setCustomerId] = useState(routerCustomerId);
   const [type, setType] = useState('payment_remind');
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedCust, setSelectedCust] = useState(null);
 
   useEffect(() => {
     if (routerCustomerId) {
@@ -23,7 +28,27 @@ export function useAddFollowUp(options = {}) {
     }
   }, [routerCustomerId]);
 
-  const selectedCust = customers.find(c => c.id === customerId);
+  // คอยตรวจสอบและดึงรายละเอียดผู้ใช้ที่ถูกเลือกหากไม่มีใน List ปกติ
+  useEffect(() => {
+    if (!customerId) {
+      setSelectedCust(null);
+      return;
+    }
+    const found = customers.find(c => c.id === customerId);
+    if (found) {
+      setSelectedCust(found);
+    } else {
+      let active = true;
+      fetchCustomerDetail(customerId)
+        .then(res => {
+          if (active && res?.success && res?.data) {
+            setSelectedCust(res.data);
+          }
+        })
+        .catch(err => console.error("Failed to fetch customer detail:", err));
+      return () => { active = false; };
+    }
+  }, [customerId, customers]);
 
   // Auto-switch to payment_remind when overdue customer selected
   useEffect(() => {

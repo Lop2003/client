@@ -34,6 +34,8 @@ export default function FollowUpForm({
   isSubmitting,
   handleSubmit,
   selectedCust,
+  onSearchChange,
+  searchLoading,
   onCancel,
 }) {
   return (
@@ -118,7 +120,10 @@ export default function FollowUpForm({
           <SearchableCustomerDropdown
             customers={customers}
             selectedCustomerId={customerId}
+            selectedCustomerDetail={selectedCust}
             onChange={id => { setCustomerId(id); setError(''); }}
+            onSearchChange={onSearchChange}
+            isLoading={searchLoading}
             label="เลือกบัญชีคู่สัญญาลูกค้า (พิมพ์ค้นหารายชื่อได้) *"
             showOverdueBadges
           />

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
@@ -5,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
+import CircularProgress from '@mui/material/CircularProgress';
 
 /**
  * Searchable customer dropdown — rewritten using MUI Autocomplete for perfect stability,
@@ -13,12 +15,22 @@ import SearchIcon from '@mui/icons-material/Search';
 export default function SearchableCustomerDropdown({
   customers = [],
   selectedCustomerId = '',
+  selectedCustomerDetail = null,
   onChange,
+  onSearchChange,
+  isLoading = false,
   label = 'เลือกบัญชีลูกค้าสัญญา',
   placeholder = 'พิมพ์เพื่อค้นหาชื่อลูกค้า, เบอร์โทร, สาขา หรือสินค้า...',
   showOverdueBadges = false,
 }) {
-  const selectedCustomer = customers.find(c => c.id === selectedCustomerId) || null;
+  const selectedCustomer = selectedCustomerDetail || customers.find(c => c.id === selectedCustomerId) || null;
+  const [inputValue, setInputValue] = useState('');
+
+  // มั่นใจว่าลูกค้าที่เลือกอยู่จะแสดงผลเสมอ แม้ว่าไม่อยู่ในผลการค้นหาปัจจุบัน
+  const finalOptions = [...customers];
+  if (selectedCustomer && !customers.some(c => c.id === selectedCustomer.id)) {
+    finalOptions.unshift(selectedCustomer);
+  }
 
   return (
     <Box sx={{ position: 'relative' }}>
@@ -38,17 +50,28 @@ export default function SearchableCustomerDropdown({
       )}
 
       <Autocomplete
-        options={customers}
+        options={finalOptions}
         value={selectedCustomer}
         onChange={(event, newValue) => {
           onChange(newValue ? newValue.id : '');
+        }}
+        inputValue={inputValue}
+        onInputChange={(event, newInputValue, reason) => {
+          setInputValue(newInputValue);
+          if (onSearchChange && (reason === 'input' || reason === 'clear')) {
+            onSearchChange(newInputValue);
+          }
         }}
         getOptionLabel={(option) =>
           `${option.name} (${option.product} / สาขา${option.branch})`
         }
         isOptionEqualToValue={(option, value) => option.id === value.id}
-        filterOptions={(options, { inputValue }) => {
-          const clean = inputValue.toLowerCase().trim();
+        filterOptions={(options, state) => {
+          // หากเป็นการค้นหาผ่าน Server-side ให้ข้ามการกรองแบบ Local
+          if (onSearchChange) {
+            return options;
+          }
+          const clean = state.inputValue.toLowerCase().trim();
           return options.filter(c =>
             c.name.toLowerCase().includes(clean) ||
             c.phone.toLowerCase().includes(clean) ||
@@ -57,6 +80,7 @@ export default function SearchableCustomerDropdown({
             c.id.toLowerCase().includes(clean)
           );
         }}
+        loading={isLoading}
         renderInput={(params) => (
           <TextField
             {...params}
@@ -69,6 +93,12 @@ export default function SearchableCustomerDropdown({
                     <SearchIcon sx={{ fontSize: 16, color: 'text.secondary', mr: 0.5 }} />
                   </InputAdornment>
                   {params.InputProps.startAdornment}
+                </>
+              ),
+              endAdornment: (
+                <>
+                  {isLoading ? <CircularProgress color="primary" size={16} /> : null}
+                  {params.InputProps.endAdornment}
                 </>
               ),
             }}

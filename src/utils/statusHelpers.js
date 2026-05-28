@@ -33,9 +33,9 @@ export function getCustomerStatus(status) {
 // ─── Feedback Sentiment ─────────────────────────────────────────────────────
 
 export const SENTIMENT = {
-  positive: { label: 'พึงพอใจ', color: 'success', sx: { bgcolor: '#dcfce7', color: '#057A55' } },
-  neutral:  { label: 'ทั่วไป',   color: 'warning', sx: { bgcolor: '#fef3c7', color: '#92400E' } },
-  negative: { label: 'ไม่พอใจ', color: 'error',   sx: { bgcolor: '#fee2e2', color: '#C81E1E' } },
+  positive: { label: 'พึงพอใจ', color: '#057A55', borderColor: '#bbf7d0', sx: { bgcolor: '#dcfce7', color: '#057A55' } },
+  neutral:  { label: 'ทั่วไป',   color: '#92400E', borderColor: '#fde68a', sx: { bgcolor: '#fef3c7', color: '#92400E' } },
+  negative: { label: 'ไม่พอใจ', color: '#C81E1E', borderColor: '#fecaca', sx: { bgcolor: '#fee2e2', color: '#C81E1E' } },
 };
 
 export function getSentiment(sentiment) {
