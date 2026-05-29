@@ -10,7 +10,7 @@ import TagIcon from '@mui/icons-material/Tag';
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 import WarningIcon from '@mui/icons-material/Warning';
 import { getCustomerStatus } from '../../../utils/statusHelpers';
-import { formatDate, formatContractId } from '../../../utils/formatters';
+import { formatDate, formatContractId, formatPhone } from '../../../utils/formatters';
 
 export default function CustomerInfoCard({ customer }) {
   const s = getCustomerStatus(customer.status);
@@ -19,7 +19,7 @@ export default function CustomerInfoCard({ customer }) {
   const infoItems = [
     { icon: <TagIcon sx={{ fontSize: 15 }} />, label: 'รหัสอ้างอิงสัญญา', value: formatContractId(customer.id), isCode: true },
     { icon: <SmartphoneIcon sx={{ fontSize: 15 }} />, label: 'สินค้าผ่อนชำระ', value: customer.product },
-    { icon: <PhoneIcon sx={{ fontSize: 15 }} />, label: 'เบอร์ติดต่อลูกค้า', value: customer.phone, isCode: true },
+    { icon: <PhoneIcon sx={{ fontSize: 15 }} />, label: 'เบอร์ติดต่อลูกค้า', value: formatPhone(customer.phone), isCode: true },
     { icon: <LocationOnIcon sx={{ fontSize: 15 }} />, label: 'สาขาที่ทำรายการ', value: `สาขา${customer.branch}` },
     { icon: <AccessTimeFilledIcon sx={{ fontSize: 15 }} />, label: 'ระยะสัญญาทั้งหมด', value: `${customer.plan_months} เดือน` },
     { icon: <CalendarTodayIcon sx={{ fontSize: 15 }} />, label: 'วันที่เริ่มทำสัญญา', value: formatDate(customer.created_at, 'long') },

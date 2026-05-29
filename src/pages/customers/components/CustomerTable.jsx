@@ -14,9 +14,11 @@ import Button from '@mui/material/Button';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import InfoIcon from '@mui/icons-material/Info';
 import Skeleton from '@mui/material/Skeleton';
+import Tooltip from '@mui/material/Tooltip';
 import { getCustomerStatus } from '../../../utils/statusHelpers';
-import { formatContractId } from '../../../utils/formatters';
+import { formatContractId, formatPhone } from '../../../utils/formatters';
 import TableLoader from './TableLoader';
+
 
 const HEAD_CELLS = [
   { id: 'created_at', label: 'รหัสสัญญา', sortable: true },
@@ -172,9 +174,16 @@ export default function CustomerTable({
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography sx={{ fontSize: '0.8125rem', fontWeight: 800, color: 'text.primary', whiteSpace: 'nowrap' }}>
-                        {c.name}
-                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography sx={{ fontSize: '0.8125rem', fontWeight: 800, color: 'text.primary', whiteSpace: 'nowrap' }}>
+                          {c.name}
+                        </Typography>
+                        {isOverdue && (
+                          <Tooltip title="บัญชีอยู่ระหว่างค้างชำระค่างวดสัญญา" arrow placement="top">
+                            <InfoIcon sx={{ fontSize: 16, color: 'error.main', cursor: 'help' }} />
+                          </Tooltip>
+                        )}
+                      </Box>
                     </TableCell>
                     <TableCell>
                       <Typography sx={{ 
@@ -183,7 +192,7 @@ export default function CustomerTable({
                         fontFamily: 'monospace',
                         fontWeight: 600
                       }}>
-                        {c.phone}
+                        {formatPhone(c.phone)}
                       </Typography>
                     </TableCell>
                     <TableCell>

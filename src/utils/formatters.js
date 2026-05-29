@@ -35,3 +35,18 @@ export function formatContractId(id) {
 export function formatPlanMonths(months) {
   return `${months} เดือน`;
 }
+
+/**
+ * Format 10-digit Thai phone number to 'XXX-XXX-XXXX'
+ * @param {string|number} phone
+ * @returns {string}
+ */
+export function formatPhone(phone) {
+  if (!phone) return '-';
+  const cleanPhone = String(phone).replace(/\D/g, '');
+  if (cleanPhone.length === 10) {
+    return `${cleanPhone.slice(0, 3)}-${cleanPhone.slice(3, 6)}-${cleanPhone.slice(6)}`;
+  }
+  return phone;
+}
+

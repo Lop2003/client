@@ -8,17 +8,27 @@ import CustomerDetailModal from './components/CustomerDetailModal';
 
 import { useCustomers } from '../../hooks/useCustomers';
 import { useBranches } from '../../hooks/useBranches';
+import { useCustomerFilters } from '../../hooks/useCustomerFilters';
 
 export default function CustomersPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedCustomerId = searchParams.get('id');
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const {
+    searchQuery,
+    setSearchQuery,
+    selectedBranch,
+    setSelectedBranch,
+    selectedStatus,
+    setSelectedStatus,
+    sortBy,
+    setSortBy,
+    sortOrder,
+    setSortOrder,
+  } = useCustomerFilters();
+
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [selectedBranch, setSelectedBranch] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [sortBy, setSortBy] = useState('created_at');
-  const [sortOrder, setSortOrder] = useState('desc');
+
 
   // Debounce search query to reduce excessive API calls
   useEffect(() => {

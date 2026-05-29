@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { createFollowUp } from '../services/followUpMutations';
 import { fetchCustomerDetail } from '../services/customerService';
-import { showToast } from '../components/Toast';
+import { useToast } from '../components/Toast';
 import { PATHS } from '../routes/paths';
 
 export function useAddFollowUp(options = {}) {
   const { customers = [] } = options;
   const navigate = useNavigate();
   const location = useLocation();
+  const { showToast } = useToast();
 
   // รองรับการดึง customerId จากทั้ง location state และ URL query parameter
   const searchParams = new URLSearchParams(location.search);

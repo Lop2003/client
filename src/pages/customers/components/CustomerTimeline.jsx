@@ -8,12 +8,13 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 import CheckIcon from '@mui/icons-material/Check';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useToast } from '../../../components/Toast';
 import { updateFollowUpStatus } from '../../../services/followUpMutations';
-import { showToast } from '../../../components/Toast';
 import { getFollowUpType } from '../../../utils/statusHelpers';
 import { formatDate } from '../../../utils/formatters';
 
 export default function CustomerTimeline({ followUps = [], customerId, onRefresh }) {
+  const { showToast } = useToast();
   const [updatingId, setUpdatingId] = useState(null);
 
   const handleComplete = async (followUpId) => {
